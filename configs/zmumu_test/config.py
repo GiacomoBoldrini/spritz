@@ -93,7 +93,7 @@ variables = {}
 
 variables["genWeight"] = {
     "func": lambda events: events.weight,
-    "axis": hist.axis.Regular(100, 0, 10000, name="genWeight"),
+    "axis": hist.axis.Regular(100000, 0, 100000, name="genWeight"),
     "unweighted": True
 }
 
