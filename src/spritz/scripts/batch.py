@@ -21,6 +21,7 @@ def preprocess_chunks(year):
     new_chunks = read_chunks("data/chunks.pkl")
 
     for i, chunk in enumerate(new_chunks):
+        print(chunk)
         new_chunks[i]["data"]["read_form"] = forms[chunk["data"]["read_form"]]
     return new_chunks
 

@@ -17,7 +17,7 @@ lumi = lumis[year]["B"] / 1000  # ERA C of 2017
 # lumi = lumis[year]["tot"] / 1000  # All of 2017
 plot_label = "ZmumuEFT"
 year_label = "2018B"
-njobs = 200
+njobs = 500
 
 runner = f"{fw_path}/src/spritz/runners/runner_3DY.py"
 
@@ -35,24 +35,28 @@ datasets = {}
 
 datasets["DYmm"] = {
     "files": "DYJetsToMuMu_M-50",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 datasets["DYee"] = {
     "files": "DYJetsToEE_M-50",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 
 datasets["DYtt"] = {
     "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 
 datasets["TTJets"] = {
     "files": "TTJets",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 top_samples = [
@@ -68,23 +72,27 @@ for i, sample in enumerate(
 ):
     datasets[sample] = {
         "files": sample,
-        "task_weight": 8
+        "task_weight": 8,
+        "max_chunks": 100
     }
 
 for sample in ["WW", "WZ", "ZZ"]:
     datasets[sample] = {
         "files": f"{sample}_TuneCP5_13TeV-pythia8",
-        "task_weight": 8
+        "task_weight": 8,
+        "max_chunks": 100
     }
 
 datasets["WJetsToLNu"] = {
     "files": "WJetsToLNu-LO",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 datasets["GGToLL"] = {
     "files": "GGToLL_M50",
-    "task_weight": 8
+    "task_weight": 8,
+    "max_chunks": 100
 }
 
 
@@ -187,7 +195,7 @@ colors["DYmm"] = cmap_pastel[1]
 
 
 # regions
-preselections = lambda events: (events.mll > 60) & (events.mll < 180)  # noqa E731
+preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 1000) # noqa E731
 
 regions = {}
 
