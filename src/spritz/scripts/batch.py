@@ -107,12 +107,14 @@ def submit(
         sys.exit(0)
 
     x509name = os.environ["X509_USER_PROXY"].split("/")[-1]
+    condor_script_name = script_name.split("/")[-1]
 
     txtsh = "#!/bin/bash\n"
     txtsh += "git clone https://github.com/GiacomoBoldrini/spritz.git\n"
     txtsh += f"export X509_USER_PROXY=$PWD/{x509name}\n"
-    txtsh += "cd spritz ; source start.sh; python3 -m pip install .; cd ..\n"
-    txtsh += f"time python {script_name} {path_an}\n"
+    txtsh += "cd spritz ; source start.sh; python3 -m pip install .; source start.sh; cd ..\n"
+    txtsh += "export PATH=\"$HOME/.local/bin:$PATH\"\n"
+    txtsh += f"time python {condor_script_name} .\n"
 
     with open("condor/run.sh", "w") as file:
         file.write(txtsh)
@@ -123,7 +125,7 @@ def submit(
     txtjdl += "MY.SingularityImage = \"/eos/user/g/gboldrin/spritz.sif\"\n" 
     txtjdl += "should_transfer_files = YES\n"
     txtjdl += f"transfer_input_files = {os.environ["X509_USER_PROXY"]}, $(Folder)/chunks_job.pkl, "
-    txtjdl += f" {script_name}, {get_fw_path()}/data/{an_dict['year']}/cfg.json\n"
+    txtjdl += f" {script_name}, {get_fw_path()}/data/{an_dict['year']}/cfg.json, {path_an}/config.py\n"
     txtjdl += 'transfer_output_remaps = "results.pkl = $(Folder)/chunks_job.pkl"\n'
     txtjdl += "output = $(Folder)/out.txt\n"
     txtjdl += "error  = $(Folder)/err.txt\n"

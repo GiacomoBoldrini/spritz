@@ -506,7 +506,8 @@ def process(events, **kwargs):
             # only apply the photon filter and do not require 2 jets 
             # gen matched, this is for VBF-Z
 
-            events = events[gen_mask]
+            # events = events[gen_mask]
+            
             # jet = ak.pad_none(events.Jet, 2, clip=True)
             
             # jet = events.Jet

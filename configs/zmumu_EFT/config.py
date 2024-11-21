@@ -209,10 +209,15 @@ regions["inc_ee"] = {
     "mask": 0,
 }
 
-# regions["inc_mm"] = {
-#     "func": lambda events: events["mm"],
-#     "mask": 0,
-# }
+regions["inc_emu"] = {
+    "func": lambda events: (events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId) == -13 * 11  & (events.mll > 60) & (events.mll < 180) & (events.weight < 5000),
+    "mask": 0,
+}
+
+regions["inc_mm"] = {
+    "func": lambda events: events["mm"],
+    "mask": 0,
+}
 
 variables = {}
 
