@@ -36,27 +36,27 @@ datasets = {}
 datasets["DYmm"] = {
     "files": "DYJetsToMuMu_M-50",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 datasets["DYee"] = {
     "files": "DYJetsToEE_M-50",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 
 datasets["DYtt"] = {
     "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 
 datasets["TTJets"] = {
     "files": "TTJets",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 top_samples = [
@@ -73,6 +73,7 @@ for i, sample in enumerate(
     datasets[sample] = {
         "files": sample,
         "task_weight": 8,
+    "max_chunks": 20,
         "max_chunks": 100
     }
 
@@ -80,19 +81,20 @@ for sample in ["WW", "WZ", "ZZ"]:
     datasets[sample] = {
         "files": f"{sample}_TuneCP5_13TeV-pythia8",
         "task_weight": 8,
+    "max_chunks": 20,
         "max_chunks": 100
     }
 
 datasets["WJetsToLNu"] = {
     "files": "WJetsToLNu-LO",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 datasets["GGToLL"] = {
     "files": "GGToLL_M50",
     "task_weight": 8,
-    "max_chunks": 100
+    "max_chunks": 20
 }
 
 
@@ -108,6 +110,9 @@ DataRun = [
 ]
 
 DataSets = ["SingleMuon", "EGamma", "DoubleMuon"]
+
+# DataSets = ["SingleMuon", "EGamma"]
+
 
 DataTrig = {
     "DoubleMuon": "events.DoubleMu",
@@ -195,19 +200,19 @@ colors["DYmm"] = cmap_pastel[1]
 
 
 # regions
-preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 1000) # noqa E731
+preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 5000) # noqa E731
 
 regions = {}
 
 regions["inc_ee"] = {
-    "func": lambda events: events["ee"],
+    "func": lambda events: events["ee"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 5000),
     "mask": 0,
 }
 
-regions["inc_mm"] = {
-    "func": lambda events: events["mm"],
-    "mask": 0,
-}
+# regions["inc_mm"] = {
+#     "func": lambda events: events["mm"],
+#     "mask": 0,
+# }
 
 variables = {}
 
@@ -224,6 +229,16 @@ variables["ptll"] = {
 variables["etal1"] = {
     "func": lambda events: events.Lepton[:, 0].eta,
     "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal1"),
+}
+
+variables["mll_eta"] = {
+    "func": lambda events: events.Lepton[:, 0].eta,
+    "axis": [hist.axis.Regular(20, 60, 120, name="mll"), hist.axis.Regular(5, -2.5, 2.5, name="etal1")] 
+}
+
+variables["triple_diff"] = {
+    "func": lambda events: events.Lepton[:, 0].eta,
+    "axis": [hist.axis.Regular(20, 60, 120, name="mll"), hist.axis.Regular(4, -2.5, 2.5, name="etal1"), hist.axis.Regular(4, 0, 150, name="ptll")] 
 }
 
 

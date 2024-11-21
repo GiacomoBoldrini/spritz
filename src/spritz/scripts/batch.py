@@ -100,9 +100,18 @@ def submit(
     proc = subprocess.Popen(f"cp {script_name} condor/", shell=True)
     proc.wait()
 
+    # need to transfer the user certificate to access
+    # xrootd on condor nodes
+    if "X509_USER_PROXY" not in os.environ.keys():
+        print("--> setup grid certificate at X509_USER_PROXY")
+        sys.exit(0)
+
+    x509name = os.environ["X509_USER_PROXY"].split("/")[-1]
+
     txtsh = "#!/bin/bash\n"
-    txtsh += "tar -axvf spritz.tar.xz\n"
-    txtsh += "source start.sh\n"
+    txtsh += "git clone git@github.com:GiacomoBoldrini/spritz.git\n"
+    txtsh += f"export X509_USER_PROXY=$PWD/{x509name}\n"
+    txtsh += "cd spritz ; source start.sh; python3 -m pip install .; cd ..\n"
     txtsh += f"time python {script_name} {path_an}\n"
 
     with open("condor/run.sh", "w") as file:
@@ -111,9 +120,9 @@ def submit(
     txtjdl = "universe = vanilla \n"
     txtjdl += "executable = run.sh\n"
     txtjdl += "arguments = $(Folder)\n"
-
+    txtjdl += "MY.SingularityImage = \"/eos/user/g/gboldrin/spritz.sif\"\n" 
     txtjdl += "should_transfer_files = YES\n"
-    txtjdl += "transfer_input_files = $(Folder)/chunks_job.pkl, "
+    txtjdl += f"transfer_input_files = {os.environ["X509_USER_PROXY"]}, $(Folder)/chunks_job.pkl, "
     txtjdl += f" {script_name}, {get_fw_path()}/spritz.tar.xz, {get_fw_path()}/data/{an_dict['year']}/cfg.json\n"
     txtjdl += 'transfer_output_remaps = "results.pkl = $(Folder)/chunks_job.pkl"\n'
     txtjdl += "output = $(Folder)/out.txt\n"

@@ -431,7 +431,9 @@ def process(events, **kwargs):
                 events.Lepton[:, 0].TightSF * events.Lepton[:, 1].TightSF
             )
 
-            print(ak.max(events["weight"]), ak.mean(events["weight"]))
+            print(f"max: {ak.max(events["weight"])}, min: {ak.min(events["weight"])}, mean: {ak.mean(events["weight"])}")
+
+            print(np.unique(events["weight"]))
 
             # events["weight"] = (
             #     events.weight

@@ -66,6 +66,38 @@ ElectronWP = {
                 },
                 "fakeW": "/LatinoAnalysis/NanoGardener/python/data/fake_prompt_rates/Full2018v9/mvaFall17V2Iso_WP90/",
             },
+            # ----- mvaFall17V2Iso
+            "mvaFall17V2Iso_WP90_modSF": {
+                "cuts": {
+                    # Common cuts
+                    "True": [
+                        'abs(electron_col[LF_idx]["eta"]) < 2.5',
+                        'electron_col[LF_idx]["mvaFall17V2Iso_WP90"]',
+                        'electron_col[LF_idx]["convVeto"] == 1',
+                        'electron_col[LF_idx]["pfRelIso03_all"] < 0.06',
+                    ],
+                    # Barrel
+                    'abs(electron_col[LF_idx]["eta"]) <= 1.479': [
+                        'abs(electron_col[LF_idx]["dxy"]) < 0.05',
+                        'abs(electron_col[LF_idx]["dz"]) < 0.1',
+                    ],
+                    # EndCap
+                    'abs(electron_col[LF_idx]["eta"]) > 1.479': [
+                        'abs(electron_col[LF_idx]["dxy"]) < 0.1',
+                        'abs(electron_col[LF_idx]["dz"]) < 0.2',
+                    ],
+                },
+                "tkSF": {
+                    "1-1": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz"
+                },
+                "wpSF": {
+                    "1-1": "/cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/EGM/2018_UL/electron.json.gz",
+                },
+                "scale": {
+                    "1-1": "/afs/cern.ch/user/g/gboldrin/spritz/data/Full2018v9/clib/EGM_ScaleUnc.json.gz",
+                },
+                "fakeW": "/LatinoAnalysis/NanoGardener/python/data/fake_prompt_rates/Full2018v9/mvaFall17V2Iso_WP90/",
+            },
         },
     },
     "Full2017v9": {

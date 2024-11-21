@@ -445,6 +445,8 @@ def process(events, **kwargs):
                 # * events.EMTFbug_veto
             )
 
+            print()
+
         ##################################################
         # Variable definitions
 
@@ -492,6 +494,7 @@ def process(events, **kwargs):
             lhe_mll = (lhe_leptons[:, 0] + lhe_leptons[:, 1]).mass
             events = events[lhe_mll > 50]
 
+        """
         if "DY" in dataset:
             # Filter out events with gen photons
             gen_photons = (
@@ -507,19 +510,8 @@ def process(events, **kwargs):
             # gen matched, this is for VBF-Z
 
             events = events[gen_mask]
-            # jet = ak.pad_none(events.Jet, 2, clip=True)
-            
-            # jet = events.Jet
-            # jet_genmatched = (jet.genJetIdx >= 0) & (
-            #     jet.genJetIdx < ak.num(events.GenJet)
-            # )
-            # jet_genmatched = ak.pad_none(jet_genmatched, 2)
-            # both_jets_gen_matched = ak.fill_none(
-            #     jet_genmatched[:, 0] & jet_genmatched[:, 1], False
-            # )
-            # events["hard"] = gen_mask & both_jets_gen_matched
-            # events["PU"] = gen_mask & ~both_jets_gen_matched
-
+        """
+        
         if subsamples != {}:
             for subsample in subsamples:
                 events[f"{dataset}_{subsample}"] = eval(subsamples[subsample])

@@ -95,6 +95,7 @@ def lepton_sf(events, variations, ceval_lepton_sf, cfg):
             events[varied_col] = ak.where(mask, res, lepton_reco_sf["nominal"])
             variations.register_variation([("Lepton", "RecoSF")], var_name)
 
+    """ # Latinos idiso
     # Lepton IdIso SF
     lepton_idiso_vars = ["nominal", "stat", "syst"]
     lepton_idiso_sf = {
@@ -105,6 +106,7 @@ def lepton_sf(events, variations, ceval_lepton_sf, cfg):
     for idiso_sf in ["ele_wp"]:
         for variation in lepton_idiso_vars:
             mask = sfs_dict[idiso_sf]["mask"]
+            print(mask)
             _run_period = ak.mask(run_period, mask)
             _eta = ak.mask(eta, mask)
             _pt = ak.mask(pt, mask)
@@ -113,8 +115,47 @@ def lepton_sf(events, variations, ceval_lepton_sf, cfg):
                 sfs_dict[idiso_sf]["wrap"](_run_period, variation, _eta, _pt),
                 lepton_idiso_sf[variation],
             )
+    """
+
+    # Lepton ID SF (only electrons) ----> EG POG JSON contains wp90iso same way as the above/below
+    lepton_idiso_vars = ["nominal", "syst_down", "syst_up"]
+    ele_idiso_sf = {k: ak.ones_like(pt) for k in lepton_idiso_vars}
+
+    # Pay attention, ele_reco SF variations do not give the error but they are directly the shifts
+    for idiso_sf in ["ele_wp"]:
+        for variation in lepton_idiso_vars:
+            mask = sfs_dict[idiso_sf]["mask"]
+            _eta = ak.mask(eta, mask)
+            _pt = ak.mask(pt, mask)
+            ele_idiso_sf[variation] = ak.where(
+                mask,
+                sfs_dict[idiso_sf]["wrap"](variation, _eta, _pt),
+                ele_idiso_sf[variation],
+            )
+
+    for variation in lepton_idiso_vars:
+        ele_idiso_sf[variation] = ak.fill_none(ele_idiso_sf[variation], 1.0)
+
+    events[("Lepton", "TightSF")] = ele_idiso_sf["nominal"]
+
+    for t, mask in zip(["ele"], [ele_mask]):
+        for _, tag in zip([+1, -1], ["up", "down"]):
+            var_name = f"{t}_idiso_{tag}"
+            varied_col = variation_module.Variation.format_varied_column(
+                ("Lepton", "TightSF"), var_name
+            )
+            # res = lepton_reco_sf["nominal"] + sign * lepton_reco_sf[f"syst_{tag}"]
+            res = ele_idiso_sf[f"syst_{tag}"]
+            events[varied_col] = ak.where(mask, res, ele_idiso_sf["nominal"])
+            variations.register_variation([("Lepton", "TightSF")], var_name)
+
+
+    """
+    #################
 
     muon_idiso_vars = ["nominal", "syst"]
+    muon_idiso_sf = {k: ak.ones_like(pt) for k in muon_idiso_vars}
+    
     muon_idiso_sf = {
         idiso_sf: {
             k: (ak.ones_like(pt) if k == "nominal" else ak.zeros_like(pt))
@@ -141,36 +182,40 @@ def lepton_sf(events, variations, ceval_lepton_sf, cfg):
         / muon_idiso_sf["muon_iso"]["nominal"] ** 2
     )
 
-    # lepton_idiso_sf["nominal"] = ak.where(mu_mask, muon_sf, lepton_idiso_sf["nominal"])
+    # muon_idiso_sf["nominal"] = ak.where(mu_mask, muon_sf, muon_idiso_sf["nominal"])
     # FIXME, removing muon SF
-    lepton_idiso_sf["nominal"] = ak.where(
-        mu_mask, ak.ones_like(muon_sf), lepton_idiso_sf["nominal"]
+    muon_idiso_sf["nominal"] = ak.where(
+        mu_mask, ak.ones_like(muon_sf), ak.zeros_like(muon_sf)
     )
-    lepton_idiso_sf["syst"] = ak.where(
-        mu_mask, ak.ones_like(muon_syst) * 0.0, lepton_idiso_sf["syst"]
+    # muon_idiso_sf["syst"] = ak.where(
+    #     mu_mask, ak.ones_like(muon_syst) * 0.0, muon_idiso_sf["syst"]
+    # )
+    muon_idiso_sf["syst"] = ak.where(
+        mu_mask, ak.ones_like(muon_syst) * 0.0, ak.zeros_like(muon_syst)
     )
 
-    for variation in lepton_idiso_vars:
+    for variation in muon_idiso_vars:
         if variation == "nominal":
-            lepton_idiso_sf[variation] = ak.fill_none(lepton_idiso_sf[variation], 1.0)
+            muon_idiso_sf[variation] = ak.fill_none(muon_idiso_sf[variation], 1.0)
         else:
-            lepton_idiso_sf[variation] = ak.fill_none(lepton_idiso_sf[variation], 0.0)
+            muon_idiso_sf[variation] = ak.fill_none(muon_idiso_sf[variation], 0.0)
 
-    lepton_idiso_sf["err"] = np.sqrt(
-        lepton_idiso_sf["syst"] ** 2 / lepton_idiso_sf["nominal"] ** 2
-        + lepton_idiso_sf["stat"] ** 2 / lepton_idiso_sf["nominal"] ** 2
+    muon_idiso_sf["err"] = np.sqrt(
+        muon_idiso_sf["syst"] ** 2 / muon_idiso_sf["nominal"] ** 2
+        + muon_idiso_sf["stat"] ** 2 / muon_idiso_sf["nominal"] ** 2
     )
 
-    events[("Lepton", "TightSF")] = lepton_idiso_sf["nominal"]
+    events[("Lepton", "TightSF")] = muon_idiso_sf["nominal"]
 
-    for t, mask in zip(["ele", "mu"], [ele_mask, mu_mask]):
+    for t, mask in zip(["mu"], [mu_mask]):
         for sign, tag in zip([+1, -1], ["up", "down"]):
             var_name = f"{t}_idiso_{tag}"
             varied_col = variation_module.Variation.format_varied_column(
-                ("Lepton", "TightSF"), var_name
+                ("Lepton", "muIDSF"), var_name
             )
-            res = lepton_idiso_sf["nominal"] + sign * lepton_idiso_sf["err"]
-            events[varied_col] = ak.where(mask, res, lepton_idiso_sf["nominal"])
-            variations.register_variation([("Lepton", "TightSF")], var_name)
+            res = muon_idiso_sf["nominal"] + sign * muon_idiso_sf["err"]
+            events[varied_col] = ak.where(mask, res, muon_idiso_sf["nominal"])
+            variations.register_variation([("Lepton", "muIDSF")], var_name)
 
+    """
     return events, variations

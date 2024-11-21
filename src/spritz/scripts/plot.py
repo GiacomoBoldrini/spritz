@@ -149,7 +149,7 @@ def plot(
 
     tmp_sum = dummy_histo.copy()
     fig, ax = plt.subplots(
-        2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}, dpi=200
+        2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}, dpi=200, figsize=(15,5)
     )  # figsize=(5,5), dpi=200)
     fig.tight_layout(pad=-0.5)
     hep.cms.label(
