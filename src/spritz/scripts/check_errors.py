@@ -26,6 +26,8 @@ def bad_lines_fun(line):
         in line
     ):
         return False
+    if line.startswith("Cloning into 'spritz'..."): 
+        return False
     return True
 
 
@@ -70,6 +72,7 @@ def check_job(job_id):
         with open(f"condor/{job_id}/err.txt") as file:
             lines = file.read().split("\n")
             bad_lines = list(filter(bad_lines_fun, lines))
+            #print(bad_lines)
             error = "\n".join(bad_lines)
             if len(bad_lines) > 0:
                 # print("\033[91m", job_id, "\033[0m")
@@ -98,6 +101,7 @@ def main():
                 # print(res[2])
             if res[1] == 2:
                 print("Real error!", res[0])
+                # print(res[2])
             if res[1] == -1:
                 running += 1
             total += 1

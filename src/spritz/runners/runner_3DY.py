@@ -370,6 +370,20 @@ def process(events, **kwargs):
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
         ) == -13 * 13
 
+        events["emu"] = (
+            events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
+        ) == -13 * 11
+
+        # same sign control region for charge misid 
+
+        events["ee_ss"] = (
+            events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
+        ) == 11 * 11
+
+        events["mm_ss"] = (
+            events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
+        ) == 13 * 13
+
         if not isData:
             events["prompt_gen_match_2l"] = (
                 events.Lepton[:, 0].promptgenmatched
@@ -378,11 +392,21 @@ def process(events, **kwargs):
             events = events[events.prompt_gen_match_2l]
 
         # Analysis level cuts
-        leptoncut = events.ee | events.mm
+        # leptoncut = events.ee | events.mm
 
         # third lepton veto
-        leptoncut = leptoncut & (
-            ak.fill_none(
+        # leptoncut = leptoncut & (
+        #     ak.fill_none(
+        #         ak.mask(
+        #             ak.all(events.Lepton[:, 2:].pt < 10, axis=1),
+        #             ak.num(events.Lepton) >= 3,
+        #         ),
+        #         True,
+        #         axis=0,
+        #     )
+        # )
+
+        leptoncut = ak.fill_none(
                 ak.mask(
                     ak.all(events.Lepton[:, 2:].pt < 10, axis=1),
                     ak.num(events.Lepton) >= 3,
@@ -390,7 +414,6 @@ def process(events, **kwargs):
                 True,
                 axis=0,
             )
-        )
 
         # Cut on pt of two leading leptons
         leptoncut = (

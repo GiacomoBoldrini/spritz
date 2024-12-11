@@ -112,8 +112,8 @@ def submit(
     txtsh = "#!/bin/bash\n"
     txtsh += "git clone https://github.com/GiacomoBoldrini/spritz.git\n"
     txtsh += f"export X509_USER_PROXY=$PWD/{x509name}\n"
-    txtsh += "cd spritz ; source start.sh; python3 -m pip install .; source start.sh; cd ..\n"
-    txtsh += "export PATH=\"$HOME/.local/bin:$PATH\"\n"
+    txtsh += "cd spritz ; source start.sh; cd ..\n"
+    #txtsh += "export PATH=\"$HOME/.local/bin:$PATH\"\n"
     txtsh += f"time python {condor_script_name} .\n"
 
     with open("condor/run.sh", "w") as file:
@@ -122,7 +122,7 @@ def submit(
     txtjdl = "universe = vanilla \n"
     txtjdl += "executable = run.sh\n"
     txtjdl += "arguments = $(Folder)\n"
-    txtjdl += "MY.SingularityImage = \"/eos/user/g/gboldrin/spritz.sif\"\n" 
+    txtjdl += "MY.SingularityImage = \"/eos/user/g/gboldrin/spritz_v2.sif\"\n" 
     txtjdl += "should_transfer_files = YES\n"
     txtjdl += f"transfer_input_files = {os.environ["X509_USER_PROXY"]}, $(Folder)/chunks_job.pkl, "
     txtjdl += f" {script_name}, {get_fw_path()}/data/{an_dict['year']}/cfg.json, {path_an}/config.py\n"

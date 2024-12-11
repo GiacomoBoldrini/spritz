@@ -35,28 +35,24 @@ datasets = {}
 
 datasets["DYmm"] = {
     "files": "DYJetsToMuMu_M-50",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 datasets["DYee"] = {
     "files": "DYJetsToEE_M-50",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 
 datasets["DYtt"] = {
     "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 
 datasets["TTJets"] = {
     "files": "TTJets",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 top_samples = [
@@ -72,29 +68,23 @@ for i, sample in enumerate(
 ):
     datasets[sample] = {
         "files": sample,
-        "task_weight": 8,
-    "max_chunks": 20,
-        "max_chunks": 100
+        "task_weight": 8
     }
 
 for sample in ["WW", "WZ", "ZZ"]:
     datasets[sample] = {
         "files": f"{sample}_TuneCP5_13TeV-pythia8",
-        "task_weight": 8,
-    "max_chunks": 20,
-        "max_chunks": 100
+        "task_weight": 8
     }
 
 datasets["WJetsToLNu"] = {
     "files": "WJetsToLNu-LO",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 datasets["GGToLL"] = {
     "files": "GGToLL_M50",
-    "task_weight": 8,
-    "max_chunks": 20
+    "task_weight": 8
 }
 
 
@@ -200,22 +190,32 @@ colors["DYmm"] = cmap_pastel[1]
 
 
 # regions
-preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 5000) # noqa E731
+preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 1000) # noqa E731
 
 regions = {}
 
 regions["inc_ee"] = {
-    "func": lambda events: events["ee"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 5000),
+    "func": lambda events: events["ee"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
     "mask": 0,
 }
 
 regions["inc_emu"] = {
-    "func": lambda events: (events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId) == -13 * 11  & (events.mll > 60) & (events.mll < 180) & (events.weight < 5000),
+    "func": lambda events: events["emu"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
     "mask": 0,
 }
 
 regions["inc_mm"] = {
-    "func": lambda events: events["mm"],
+    "func": lambda events: events["mm"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "mask": 0,
+}
+
+regions["inc_ee_ss"] = {
+    "func": lambda events: events["ee_ss"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "mask": 0,
+}
+
+regions["inc_mm_ss"] = {
+    "func": lambda events: events["mm_ss"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
     "mask": 0,
 }
 
