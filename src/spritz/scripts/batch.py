@@ -15,6 +15,7 @@ from spritz.framework.framework import (
 def preprocess_chunks(year):
     with open(f"{get_fw_path()}/data/common/forms.json", "r") as file:
         forms_common = json.load(file)
+        print(forms_common)
     with open(f"{get_fw_path()}/data/{year}/forms.json", "r") as file:
         forms_era = json.load(file)
     forms = add_dict(forms_common, forms_era)
@@ -97,7 +98,7 @@ def submit(
         write_chunks(job, f"{folder}/chunks_job_original.pkl")
 
         folders.append(folder.split("/")[-1])
-    proc = subprocess.Popen(f"cp {script_name} condor/", shell=True)
+    proc = subprocess.Popen(f"cp {script_name} condor/runner.py", shell=True)
     proc.wait()
 
     # need to transfer the user certificate to access
@@ -158,6 +159,8 @@ def main():
     path_an = os.path.abspath(".")
     an_dict = get_analysis_dict()
     chunks = preprocess_chunks(an_dict["year"])
+    runner_default = f"{get_fw_path()}/src/spritz/runners/runner_default.py"
+    runner = an_dict.get("runner", runner_default)
     dryRun = False
     runner_default = f"{get_fw_path()}/src/spritz/runners/runner_default.py"
 

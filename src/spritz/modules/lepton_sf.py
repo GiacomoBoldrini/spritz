@@ -182,17 +182,8 @@ def lepton_sf(events, variations, ceval_lepton_sf, cfg):
         / muon_idiso_sf["muon_iso"]["nominal"] ** 2
     )
 
-    # muon_idiso_sf["nominal"] = ak.where(mu_mask, muon_sf, muon_idiso_sf["nominal"])
-    # FIXME, removing muon SF
-    muon_idiso_sf["nominal"] = ak.where(
-        mu_mask, ak.ones_like(muon_sf), ak.zeros_like(muon_sf)
-    )
-    # muon_idiso_sf["syst"] = ak.where(
-    #     mu_mask, ak.ones_like(muon_syst) * 0.0, muon_idiso_sf["syst"]
-    # )
-    muon_idiso_sf["syst"] = ak.where(
-        mu_mask, ak.ones_like(muon_syst) * 0.0, ak.zeros_like(muon_syst)
-    )
+    lepton_idiso_sf["nominal"] = ak.where(mu_mask, muon_sf, lepton_idiso_sf["nominal"])
+    lepton_idiso_sf["syst"] = ak.where(mu_mask, muon_syst, lepton_idiso_sf["syst"])
 
     for variation in muon_idiso_vars:
         if variation == "nominal":
