@@ -4,12 +4,22 @@ import os
 import subprocess
 import sys
 from copy import deepcopy
-
+import argparse
 import matplotlib as mpl
 import mplhep as hep
 import numpy as np
 import uproot
 from spritz.framework.framework import get_analysis_dict, get_fw_path
+
+parser = argparse.ArgumentParser(
+        description='post_process of spritz files')
+
+parser.add_argument('-f', '--filename',   dest='filename',    
+                        help='The file name with the shapes', required=False, default="histos.root", type=str)
+parser.add_argument('-o', '--output',   dest='output',
+                        help='The output directory for the plots, default = plots', required=False, default="plots", type=str)
+
+args, _ = parser.parse_known_args()
 
 mpl.use("Agg")
 from matplotlib import pyplot as plt
@@ -50,7 +60,12 @@ def plot(
     axis = 0
     hmin = 1e7
     for sample in samples:
-        h = directory[f"histo_{sample}"].to_hist()
+        try:
+            h = directory[f"histo_{sample}"].to_hist()
+        except:
+            print(f"Could not find shape histo_{sample} in shapes")
+            continue 
+        
         if isinstance(axis, int):
             axis = h.axes[0]
         if isinstance(dummy_histo, int):
@@ -309,7 +324,7 @@ def plot(
         ax[1].set_xlabel(variable)
     # print('time before fig save', time.time()-start)
     fig.savefig(
-        f"plots/{region}_{variable}.png",
+        f"{args.output}/{region}_{variable}.png",
         facecolor="white",
         pad_inches=0.1,
         bbox_inches="tight",
@@ -336,7 +351,7 @@ def main():
     print("Doing plots")
 
     proc = subprocess.Popen(
-        "mkdir -p plots && " + f"cp {get_fw_path()}/data/common/index.php plots/",
+        f"mkdir -p {args.output} && " + f"cp {get_fw_path()}/data/common/index.php {args.output}/",
         shell=True,
     )
     proc.wait()
@@ -369,7 +384,7 @@ def main():
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpus) as executor:
         tasks = []
 
-        input_file = uproot.open("histos.root")
+        input_file = uproot.open(args.filename)
         for region in regions:
             for variable in variables:
                 if "axis" not in variables[variable]:
