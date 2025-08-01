@@ -2,7 +2,7 @@ import concurrent.futures
 import fnmatch
 import json
 import sys
-
+import argparse
 import hist
 import numpy as np
 import uproot
@@ -15,6 +15,16 @@ from spritz.framework.framework import (
 
 path_fw = get_fw_path()
 
+
+parser = argparse.ArgumentParser(
+        description='post_process of spritz files')
+
+parser.add_argument('-f', '--filename',   dest='filename',     help='The file name to be postprocessed. By default: condor/results_merged_new.pkl',
+                        required=False, default="condor/results_merged_new.pkl", type=str)
+parser.add_argument('-o', '--output',   dest='output',
+                        help='The file name for the output root file. By default histos.root', required=False, default="histos.root", type=str)
+
+args, _ = parser.parse_known_args()
 
 def renorm(h, xs, sumw, lumi):
     scale = xs * 1000 * lumi / sumw
@@ -177,6 +187,7 @@ def single_post_process(results, region, variable, samples, xss, nuisances, lumi
                 results[sample]["histos"][variable]
             except KeyError:
                 print(f"Could not find key {sample} in {variable}")
+                continue
             h = results[sample]["histos"][variable].copy()
             real_axis = list([slice(None) for _ in range(len(h.axes) - 2)])
             h = h[tuple(real_axis + [hist.loc(region), slice(None)])].copy()
@@ -288,7 +299,7 @@ def post_process(results, regions, variables, samples, xss, nuisances, lumi):
         dout = add_dict_iterable(results)
 
     print("start saving in root file")
-    fout = uproot.recreate("histos.root")
+    fout = uproot.recreate(args.output)
     for key in dout:
         fout[key] = dout[key]
     fout.close()
@@ -338,7 +349,7 @@ def main():
             xss[flat_dataset] = eval(samples_xs["samples"][key]["xsec"])
 
     print(xss)
-    results = read_chunks("condor/results_merged_new.pkl")
+    results = read_chunks(args.filename)
     print(results.keys())
     # sys.exit()
     post_process(results, regions, variables, samples, xss, nuisances, lumi)

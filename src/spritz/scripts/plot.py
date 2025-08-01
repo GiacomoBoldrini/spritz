@@ -240,7 +240,11 @@ def plot(
 
     # Blind all signal region
     if blind:
+        ydata = np.zeros_like(hlast_bkg)
+        ydata_up = np.zeros_like(hlast_bkg)
+        ydata_down  = np.zeros_like(hlast_bkg)
         ydata_blind = np.zeros_like(hlast_bkg)
+        
         ydata_up_blind = np.zeros_like(hlast_bkg)
         ydata_down_blind = np.zeros_like(hlast_bkg)
         ydata = np.where(blind_mask, ydata_blind, ydata)
@@ -285,6 +289,8 @@ def main():
     variables = analysis_dict["variables"]
     nuisances = analysis_dict["nuisances"]
     blind = analysis_dict.get("blind", False)
+
+    print(f"---> Blind {blind}")
 
     colors = analysis_dict["colors"]
     plot_label = analysis_dict["plot_label"]

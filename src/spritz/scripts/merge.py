@@ -4,12 +4,24 @@ import hashlib
 import os
 from math import ceil
 from typing import NewType
+import sys
+import argparse
 
 from spritz.framework.framework import (  # noqa: F401
     add_dict_iterable,
     read_chunks,
     write_chunks,
 )
+
+parser = argparse.ArgumentParser(
+        description='merge of spritz files')
+
+parser.add_argument('-f', '--filenames',   dest='filenames',     help='list of file paths to be postprocessed',
+                        required=False, type=str, nargs="+", default=None)
+parser.add_argument('-o', '--output',   dest='output',
+                        help='The file name for the output merged file. By default results_merged_new.pkl', required=False, default="results_merged_new.pkl", type=str)
+
+args, _ = parser.parse_known_args()
 
 MERGE_RESULT_FNAME = "tmp_special_"
 
@@ -126,12 +138,16 @@ def main():
     # basepath = "/gwdata/users/gpizzati/condor_processor/results"
     # inputs = glob.glob(f"{basepath}/results_job_*.pkl")
     basepath = os.path.abspath("condor")
-    inputs = glob.glob(f"{basepath}/job_*/chunks_job.pkl")[:]
-    output = f"{basepath}/results_merged_new.pkl"
+    if args.filenames == None: inputs = glob.glob(f"{basepath}/job_*/chunks_job.pkl")[:]
+    else:
+        inputs = [i for i in args.filenames if i.endswith('.pkl')]
+
+    output = f"{basepath}/{args.output}"
+    print(f"Merging and writing to {output}")
     reduce_function = sum
     reduce_function = add_dict_iterable
-    elements_for_task = 10
-    cpus = 10
+    elements_for_task = 10 if len(inputs) >= 10 else len(inputs)
+    cpus = 10 if len(inputs) >= 10 else len(inputs)
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpus) as executor:
         create_tree(
             inputs,

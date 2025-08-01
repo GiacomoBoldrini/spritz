@@ -24,6 +24,7 @@ from spritz.modules.basic_selections import (
     lumi_mask,
     pass_flags,
     pass_trigger,
+    pass_weightfilter
 )
 from spritz.modules.btag_sf import btag_sf
 from spritz.modules.dnn_evaluator import dnn_evaluator, dnn_transform
@@ -101,6 +102,13 @@ def process(events, **kwargs):
         events["weight"] = ak.ones_like(events.run)
     else:
         events["weight"] = events.genWeight
+        
+    if isData:
+        lumimask = LumiMask(cfg["lumiMask"])
+        events = lumi_mask(events, lumimask)
+    else:
+        events = pass_weightfilter(events, kwargs.get("max_weight", None))
+        events = events[events.pass_weightfilter]
 
     if isData:
         lumimask = LumiMask(cfg["lumiMask"])
@@ -108,6 +116,9 @@ def process(events, **kwargs):
 
     sumw = ak.sum(events.weight)
     nevents = ak.num(events.weight, axis=0)
+    print("SumW and NEvents before cuts")
+    print(sumw, nevents)
+    print('-----')
 
     # Add special weight for each dataset (not subsamples)
     if special_weight != 1.0:
@@ -121,6 +132,8 @@ def process(events, **kwargs):
     events = pass_flags(events, cfg["flags"])
 
     events = events[events.pass_flags & events.pass_trigger]
+
+    print("Number of events after trigger and flags: ", len(events))
 
     if isData:
         # each data DataSet has its own trigger_sel
@@ -139,6 +152,8 @@ def process(events, **kwargs):
     events = events[ak.num(events.Lepton) >= 2]
     events = events[events.Lepton[:, 0].pt >= 8]
 
+    print("Number of events after basic Lepton sel: ", len(events))
+
     if not isData:
         events = prompt_gen_match_leptons(events)
 
@@ -148,6 +163,8 @@ def process(events, **kwargs):
 
     # Require at least one good PV
     events = events[events.PV.npvsGood > 0]
+
+    print("Number of events after prompt match and NPV>0: ", len(events))
 
     if kwargs.get("top_pt_rwgt", False):
         top_particle_mask = (events.GenPart.pdgId == 6) & ak.values_astype(
@@ -181,7 +198,11 @@ def process(events, **kwargs):
 
     # We do not need jets for the time being
     # Jet veto maps
+    
+    # print("Events before jet veto: ", len(events))
     # events = jet_veto(events, cfg)
+    # events = events[(ak.num(events.Jet[events.Jet.pt >= 30], axis=1) == 0)]
+    # print("Events after jet veto: ", len(events))
 
     # MCCorr
     # Should load SF and corrections here
@@ -304,7 +325,7 @@ def process(events, **kwargs):
         results[dataset_name]["events"] = _events
 
     originalEvents = ak.copy(events)
-    jet_pt_backup = ak.copy(events.Jet.pt)
+    # jet_pt_backup = ak.copy(events.Jet.pt)
 
     # FIXME add FakeW
 
@@ -341,6 +362,8 @@ def process(events, **kwargs):
             )
         events["l2Tight"] = ak.copy(comb)
         events = events[events.l2Tight]
+
+        print("l2Tight: ", len(events))
 
         if len(events) == 0:
             continue
@@ -384,15 +407,18 @@ def process(events, **kwargs):
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
         ) == 13 * 13
 
+        # Let;s not genmatch leptons for the time being
+        """
         if not isData:
             events["prompt_gen_match_2l"] = (
                 events.Lepton[:, 0].promptgenmatched
                 & events.Lepton[:, 1].promptgenmatched
             )
             events = events[events.prompt_gen_match_2l]
+        """
 
         # Analysis level cuts
-        # leptoncut = events.ee | events.mm
+        leptoncut = events.ee | events.mm | events.emu | events.ee_ss | events.mm_ss
 
         # third lepton veto
         # leptoncut = leptoncut & (
@@ -406,6 +432,7 @@ def process(events, **kwargs):
         #     )
         # )
 
+        # third lepton veto
         leptoncut = ak.fill_none(
                 ak.mask(
                     ak.all(events.Lepton[:, 2:].pt < 10, axis=1),
@@ -419,8 +446,13 @@ def process(events, **kwargs):
         leptoncut = (
             leptoncut & (events.Lepton[:, 0].pt > 25) & (events.Lepton[:, 1].pt > 13)
         )
-
+        if dataset == "DY_NLO_SM_SMEFTatNLO":
+            print("DY NLO SM SMEFTatNLO dataset before ", len(events))
+        
         events = events[leptoncut]
+
+        if dataset == "DY_NLO_SM_SMEFTatNLO":
+            print("DY NLO SM SMEFTatNLO dataset after ", len(events))
 
         ##################################################
 
@@ -454,19 +486,40 @@ def process(events, **kwargs):
                 events.Lepton[:, 0].TightSF * events.Lepton[:, 1].TightSF
             )
 
-            print(ak.max(events["weight"]), ak.mean(events["weight"]))
-
-            events["weight"] = (
-                events.weight
-                * events.puWeight
-                # * events.PUID_SF
-                * events.RecoSF
-                * events.TightSF
-                # * events.btagSF
-                * events.prefireWeight
-                * events.TriggerSFweight_2l
-                # * events.EMTFbug_veto
-            )
+            if dataset not in ["DYSMEFT_mll_50To100", "DYSMEFT_mll_100To200", "DY_NLO_EFT_SMEFTatNLO_mll50_100"]:
+                print(f"No LHEReweightingWeight found for dataset {dataset}, using only nominal weights")
+                # events["weight"] = (
+                #     events.weight
+                # )
+                events["weight"] = (
+                    events.weight
+                    * events.puWeight
+                    # * events.PUID_SF
+                    * events.RecoSF
+                    * events.TightSF
+                    # * events.btagSF
+                    * events.prefireWeight
+                    * events.TriggerSFweight_2l
+                    # * events.EMTFbug_veto
+                )
+            else:
+                print(f"YES LHEReweightingWeight found for dataset {dataset}")
+                # events["weight"] = (
+                #     events.weight
+                #     * events["LHEReweightingWeight"][:, 0] # SM
+                # )
+                events["weight"] = (
+                    events.weight
+                    * events.puWeight
+                    # * events.PUID_SF
+                    * events.RecoSF
+                    * events.TightSF
+                    # * events.btagSF
+                    * events.prefireWeight
+                    * events.TriggerSFweight_2l
+                    # * events.EMTFbug_veto
+                    * events["LHEReweightingWeight"][:, 0] # SM
+                )
 
         ##################################################
         # Variable definitions
@@ -500,7 +553,7 @@ def process(events, **kwargs):
         # if dataset == "Zjj":
         #     events = gen_analysis(events, dataset)
 
-
+        """
         # Requiring DY LHE mll > 50 GeV
         if "DY" in dataset and "J" in dataset:
             # DY jet binned has no mll > 50 cut
@@ -544,6 +597,7 @@ def process(events, **kwargs):
             # events["hard"] = gen_mask & both_jets_gen_matched
             # events["PU"] = gen_mask & ~both_jets_gen_matched
 
+        """
         if subsamples != {}:
             for subsample in subsamples:
                 events[f"{dataset}_{subsample}"] = eval(subsamples[subsample])
