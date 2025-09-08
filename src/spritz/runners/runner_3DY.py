@@ -44,7 +44,10 @@ from spritz.modules.puweight import puweight_sf
 from spritz.modules.rochester import correctRochester, getRochester
 from spritz.modules.run_assign import assign_run
 from spritz.modules.theory_unc import theory_unc
-from spritz.modules.trigger_sf import trigger_sf
+from spritz.modules.trigger_sf import (
+    trigger_sf, 
+    match_trigger_object
+)
 
 vector.register_awkward()
 
@@ -140,7 +143,7 @@ def process(events, **kwargs):
         events = events[eval(trigger_sel)]
 
     # we do not need to build jets for the time being
-    # events = jetSel(events, cfg)
+    events = jetSel(events, cfg)
 
     events = createLepton(events)
 
@@ -187,10 +190,17 @@ def process(events, **kwargs):
             0.0,
         )
 
-        top_pt_rwgt = (toppt * atoppt > 0.0) * (
-            np.sqrt(np.exp(0.0615 - 0.0005 * toppt) * np.exp(0.0615 - 0.0005 * atoppt))
+        events['topPtWeight'] = (toppt * atoppt > 0.0) * np.sqrt(
+            (0.103*np.exp(-0.0118*toppt) - 0.000134*toppt + 0.973) 
+            * (0.103*np.exp(-0.0118*atoppt) - 0.000134*atoppt + 0.973)
         ) + (toppt * atoppt <= 0.0)
-        events["weight"] = events.weight * top_pt_rwgt
+        
+        # top_pt_rwgt = (toppt * atoppt > 0.0) * (
+        #     np.sqrt(np.exp(0.0615 - 0.0005 * toppt) * np.exp(0.0615 - 0.0005 * atoppt))
+        # ) + (toppt * atoppt <= 0.0)
+        # events["weight"] = events.weight * top_pt_rwgt
+    else:
+        events['topPtWeight'] = ak.ones_like(events.weight)
     
     # We do not need jets for the time being
     # Remove jets HEM issue
@@ -208,15 +218,17 @@ def process(events, **kwargs):
     # Should load SF and corrections here
 
     # Correct Muons with rochester
-    events = correctRochester(events, isData, rochester)
-
+    events = correctRochester(events, isData, rochester, s=5)
+    events = match_trigger_object(events, cfg)
+    
     if not isData:
         # puWeight
         events, variations = puweight_sf(events, variations, ceval_puWeight, cfg)
 
         # add trigger SF
-        events, variations = trigger_sf(events, variations, cset_trigger, cfg)
-
+        # events, variations = trigger_sf(events, variations, cset_trigger, cfg)
+        events, variations = trigger_sf(events, variations, ceval_lepton_sf, cfg)
+        
         # add LeptonSF
         events, variations = lepton_sf(events, variations, ceval_lepton_sf, cfg)
 
@@ -273,7 +285,9 @@ def process(events, **kwargs):
     # Regions definitions!!!!!
     regions = deepcopy(analysis_cfg["regions"])
     variables = deepcopy(analysis_cfg["variables"])
-
+    check_weights = deepcopy(analysis_cfg["check_weights"])
+    check_weights["nominal"] = {"func": lambda events: events.weight}
+    
     # FIXME removing all variations
     variations.variations_dict = {
         k: v for k, v in variations.variations_dict.items() if k == "nom"
@@ -286,6 +300,10 @@ def process(events, **kwargs):
         ),
         hist.axis.StrCategory(
             sorted(list(variations.get_variations_all())), name="syst"
+        ),
+        hist.axis.StrCategory(
+            [cwgt for cwgt in check_weights],
+            name="check_weights"
         ),
     ]
 
@@ -373,25 +391,31 @@ def process(events, **kwargs):
         # # Jet real selections
  
         # # resort Jets
-        # jet_sort = ak.argsort(events[("Jet", "pt")], ascending=False, axis=1)
-        # events["Jet"] = events.Jet[jet_sort]
- 
-        # events["Jet"] = events.Jet[events.Jet.pt >= 30]
-        # # events = events[(ak.num(events.Jet[events.Jet.pt >= 30], axis=1) >= 2)]
-        # events["njet"] = ak.num(events.Jet, axis=1)
-        # events["njet_50"] = ak.num(events.Jet[events.Jet.pt >= 50], axis=1)
-
+        jet_sort = ak.argsort(events[("Jet", "pt")], ascending=False, axis=1)
+        events["Jet"] = events.Jet[jet_sort]
+        events["Jet"] = events.Jet[events.Jet.pt >= 30]
+        
+        events = events[(ak.num(events.Jet[events.Jet.pt >= 30], axis=1) == 0)]
+        
+        #events["njet"] = ak.num(events.Jet, axis=1)
+        #events["njet_50"] = ak.num(events.Jet[events.Jet.pt >= 50], axis=1)
 
         # Define categories
         
 
         ################ ALL OF THIS IS A LIOTTLE BIT HARDCODED ....
+        events["ll"] = ( ak.ones_like(events.weight, dtype=bool) )
+        
         events["ee"] = (
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
         ) == -11 * 11
         events["mm"] = (
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
         ) == -13 * 13
+        
+        events["tt"] = (
+            events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
+        ) == -15 * 15
 
         events["emu"] = (
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
@@ -407,33 +431,20 @@ def process(events, **kwargs):
             events.Lepton[:, 0].pdgId * events.Lepton[:, 1].pdgId
         ) == 13 * 13
 
-        # Let;s not genmatch leptons for the time being
-        """
+        
         if not isData:
             events["prompt_gen_match_2l"] = (
                 events.Lepton[:, 0].promptgenmatched
                 & events.Lepton[:, 1].promptgenmatched
             )
             events = events[events.prompt_gen_match_2l]
-        """
+        
 
         # Analysis level cuts
         leptoncut = events.ee | events.mm | events.emu | events.ee_ss | events.mm_ss
 
         # third lepton veto
-        # leptoncut = leptoncut & (
-        #     ak.fill_none(
-        #         ak.mask(
-        #             ak.all(events.Lepton[:, 2:].pt < 10, axis=1),
-        #             ak.num(events.Lepton) >= 3,
-        #         ),
-        #         True,
-        #         axis=0,
-        #     )
-        # )
-
-        # third lepton veto
-        leptoncut = ak.fill_none(
+        leptoncut = leptoncut & ak.fill_none(
                 ak.mask(
                     ak.all(events.Lepton[:, 2:].pt < 10, axis=1),
                     ak.num(events.Lepton) >= 3,
@@ -444,15 +455,10 @@ def process(events, **kwargs):
 
         # Cut on pt of two leading leptons
         leptoncut = (
-            leptoncut & (events.Lepton[:, 0].pt > 25) & (events.Lepton[:, 1].pt > 13)
+            leptoncut & (events.Lepton[:, 0].pt > 30) & (events.Lepton[:, 1].pt > 15)
         )
-        if dataset == "DY_NLO_SM_SMEFTatNLO":
-            print("DY NLO SM SMEFTatNLO dataset before ", len(events))
         
         events = events[leptoncut]
-
-        if dataset == "DY_NLO_SM_SMEFTatNLO":
-            print("DY NLO SM SMEFTatNLO dataset after ", len(events))
 
         ##################################################
 
@@ -486,7 +492,7 @@ def process(events, **kwargs):
                 events.Lepton[:, 0].TightSF * events.Lepton[:, 1].TightSF
             )
 
-            if dataset not in ["DYSMEFT_mll_50To100", "DYSMEFT_mll_100To200", "DY_NLO_EFT_SMEFTatNLO_mll50_100"]:
+            if not any(i in dataset for i in ["SMEFTsim", "SMEFTatNLO"]) or dataset == "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos_EGMflow_012J": 
                 print(f"No LHEReweightingWeight found for dataset {dataset}, using only nominal weights")
                 # events["weight"] = (
                 #     events.weight
@@ -495,6 +501,7 @@ def process(events, **kwargs):
                     events.weight
                     * events.puWeight
                     # * events.PUID_SF
+                    * events.topPtWeight
                     * events.RecoSF
                     * events.TightSF
                     # * events.btagSF
@@ -508,10 +515,12 @@ def process(events, **kwargs):
                 #     events.weight
                 #     * events["LHEReweightingWeight"][:, 0] # SM
                 # )
+
                 events["weight"] = (
                     events.weight
                     * events.puWeight
                     # * events.PUID_SF
+                    * events.topPtWeight
                     * events.RecoSF
                     * events.TightSF
                     # * events.btagSF
@@ -553,11 +562,10 @@ def process(events, **kwargs):
         # if dataset == "Zjj":
         #     events = gen_analysis(events, dataset)
 
-        """
-        # Requiring DY LHE mll > 50 GeV
-        if "DY" in dataset and "J" in dataset:
-            # DY jet binned has no mll > 50 cut
-            # print("Should cut DY jet binned LHE mll", dataset)
+        
+        # Requiring LHE mll > 50 GeV < 100 GeV
+
+        if not isData and not dataset.startswith("GG"):
             lhe_leptons_mask = (events.LHEPart.status == 1) & (
                 (abs(events.LHEPart.pdgId) == 11)
                 | (abs(events.LHEPart.pdgId) == 13)
@@ -565,9 +573,52 @@ def process(events, **kwargs):
             )
             lhe_leptons = events.LHEPart[lhe_leptons_mask]
             assert ak.all(ak.num(lhe_leptons) == 2)
+            
             lhe_mll = (lhe_leptons[:, 0] + lhe_leptons[:, 1]).mass
-            events = events[lhe_mll > 50]
 
+            if "50_100" in dataset or dataset in ["DYmm_M-50", "DYee_M-50", "DYtt_M-50"]:
+                events = events[(lhe_mll >= 50) & (lhe_mll <= 100)]
+                print("mass < 100 > 50 GeV: ", len(events))
+            if "100_200" in dataset or "100to200" in dataset:
+                events = events[(lhe_mll > 100) & (lhe_mll <= 200)]
+                print("mass < 200 > 100 GeV: ", len(events))
+            if "200_400" in dataset or "200to400" in dataset:
+                events = events[(lhe_mll > 200) & (lhe_mll <= 400)]
+                print("mass < 400 > 200 GeV: ", len(events))
+            if "400_600" in dataset or "400to600" in dataset:
+                events = events[(lhe_mll > 400) & (lhe_mll <= 600)]
+                print("mass < 600 > 400 GeV: ", len(events))
+            if "400_500" in dataset or "400to500" in dataset:
+                events = events[(lhe_mll > 400) & (lhe_mll <= 500)]
+                print("mass < 500 > 400 GeV: ", len(events))
+            if "500_700" in dataset or "500to700" in dataset:
+                events = events[(lhe_mll > 500) & (lhe_mll <= 700)]
+                print("mass < 700 > 500 GeV: ", len(events))
+            if "700_800" in dataset or "700to800" in dataset:
+                events = events[(lhe_mll > 700) & (lhe_mll <= 800)]
+                print("mass < 800 > 700 GeV: ", len(events))
+            if "600_800" in dataset or "600to800" in dataset:
+                events = events[(lhe_mll > 600) & (lhe_mll <= 800)]
+                print("mass < 800 > 600 GeV: ", len(events))
+            if "800_1000" in dataset or "800to1000" in dataset:
+                events = events[(lhe_mll > 800) & (lhe_mll <= 1000)]
+                print("mass < 1000 > 800 GeV: ", len(events))
+            if "1000_1500" in dataset or "1000to1500" in dataset:
+                events = events[(lhe_mll > 1000) & (lhe_mll <= 1500)]
+                print("mass < 1500 > 1000 GeV: ", len(events))
+            if "1500_2000" in dataset or "1500to2000" in dataset:
+                events = events[(lhe_mll > 1500) & (lhe_mll <= 2000)]
+                print("mass < 2000 > 1500 GeV: ", len(events))
+            if "1500_inf" in dataset or "1500toinf" in dataset:
+                events = events[(lhe_mll > 1500)]
+                print("mass > 1500 GeV: ", len(events))
+            if "2000_Inf" in dataset or "2000toInf" in dataset:
+                events = events[(lhe_mll > 2000)]
+                print("mass > 2000 GeV: ", len(events))
+                
+            
+
+        """
         if "DY" in dataset:
             # Filter out events with gen photons
             gen_photons = (
@@ -610,38 +661,43 @@ def process(events, **kwargs):
         # Fill histograms
         for dataset_name in results:
             for region in regions:
-                # for category in categories:
-                # Apply mask for specific region, category and dataset_name
-                mask = regions[region]["mask"] & events[dataset_name]
+                for cwgt in check_weights:
+                    events[cwgt] = check_weights[cwgt]["func"](events) if not isData else events.weight
+                    
+                    # for category in categories:
+                    # Apply mask for specific region, category and dataset_name
+                    mask = regions[region]["mask"] & events[dataset_name]
 
-                # We do not care about jets at this point in the 3DY analysis
-                # btag_cut = regions[region].get("btagging", dataset_name)
-                # mask = mask & events[btag_cut]
-                # if len(events[mask]) == 0:
-                #     continue
+                    # We do not care about jets at this point in the 3DY analysis
+                    # btag_cut = regions[region].get("btagging", dataset_name)
+                    # mask = mask & events[btag_cut]
+                    # if len(events[mask]) == 0:
+                    #     continue
 
-                for variable in results[dataset_name]["histos"]:
-                    if isinstance(variables[variable]["axis"], list):
-                        var_names = [k.name for k in variables[variable]["axis"]]
-                        vals = {
-                            var_name: events[var_name][mask] for var_name in var_names
-                        }
-                        results[dataset_name]["histos"][variable].fill(
-                            **vals,
-                            # category=f"{region}_{category}",
-                            category=region,
-                            syst=variation,
-                            weight=events["weight"][mask],
-                        )
-                    else:
-                        var_name = variables[variable]["axis"].name
-                        results[dataset_name]["histos"][variable].fill(
-                            events[var_name][mask],
-                            # category=f"{region}_{category}",
-                            category=region,
-                            syst=variation,
-                            weight=events["weight"][mask],
-                        )
+                    for variable in results[dataset_name]["histos"]:
+                        if isinstance(variables[variable]["axis"], list):
+                            var_names = [k.name for k in variables[variable]["axis"]]
+                            vals = {
+                                var_name: events[var_name][mask] for var_name in var_names
+                            }
+                            results[dataset_name]["histos"][variable].fill(
+                                **vals,
+                                # category=f"{region}_{category}",
+                                category=region,
+                                syst=variation,
+                                check_weights=cwgt,
+                                weight=events[cwgt][mask],
+                            )
+                        else:
+                            var_name = variables[variable]["axis"].name
+                            results[dataset_name]["histos"][variable].fill(
+                                events[var_name][mask],
+                                # category=f"{region}_{category}",
+                                category=region,
+                                syst=variation,
+                                check_weights=cwgt,
+                                weight=events[cwgt][mask],
+                            )
 
     gc.collect()
     return results

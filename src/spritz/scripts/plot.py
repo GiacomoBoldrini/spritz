@@ -60,6 +60,7 @@ def plot(
     dummy_histo = 0
     axis = 0
     hmin = 1e7
+    print(directory.keys())
     for sample in samples:
         try:
             h = directory[f"histo_{sample}"].to_hist()
