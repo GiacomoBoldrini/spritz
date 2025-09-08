@@ -197,7 +197,7 @@ def single_post_process(results, region, variable, samples, xss, nuisances, lumi
                 h = renorm(h, xss[sample], results[sample]["sumw"], lumi)
 
             tmp_histo = h[tuple(real_axis + [hist.loc("nom")])].copy()
-            hist_fold(tmp_histo, 3)
+            hist_fold(tmp_histo, 0)
             if len(real_axis) > 1:
                 tmp_histo = hist_unroll(tmp_histo)
             key = f"{region}/{variable}/histo_{histoName}"
@@ -218,7 +218,7 @@ def single_post_process(results, region, variable, samples, xss, nuisances, lumi
                         tmp_histo = h[
                             tuple(real_axis + [hist.loc(f"{nuis}_{tag}")])
                         ].copy()
-                        hist_fold(tmp_histo, 3)
+                        hist_fold(tmp_histo, 0)
                         if len(real_axis) > 1:
                             tmp_histo = hist_unroll(tmp_histo)
                         key = f"{region}/{variable}/histo_{histoName}_{nuis_name}{tag.capitalize()}"
@@ -232,7 +232,7 @@ def single_post_process(results, region, variable, samples, xss, nuisances, lumi
                     variations = []
                     for nuis_histo in nuisances[nuis]["samples"][histoName]:
                         tmp_histo = h[tuple(real_axis + [hist.loc(nuis_histo)])].copy()
-                        hist_fold(tmp_histo, 3)
+                        hist_fold(tmp_histo, 0)
                         if len(real_axis) > 1:
                             tmp_histo = hist_unroll(tmp_histo)
                         variations.append(tmp_histo.values())

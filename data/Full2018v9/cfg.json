@@ -23,8 +23,8 @@
     "maxeta": 4.7
   },
   "leptonsWP": {
-    "eleWP": "mvaFall17V2Iso_WP90_modSF",
-    "muWP": "cut_Tight_HWWW"
+    "eleWP": "mvaFall17V2Iso_WP90",
+    "muWP": "cut_tightId"
   },
   "bTag": {
     "btagLoose": 0.049,

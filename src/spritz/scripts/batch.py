@@ -22,7 +22,7 @@ def preprocess_chunks(year):
     new_chunks = read_chunks("data/chunks.pkl")
 
     for i, chunk in enumerate(new_chunks):
-        print(chunk)
+        # print(chunk)
         new_chunks[i]["data"]["read_form"] = forms[chunk["data"]["read_form"]]
     return new_chunks
 
@@ -32,6 +32,11 @@ def split_chunks(chunks, n):
     Splits list l of chunks into n jobs with approximately equals sum of values
     see  http://stackoverflow.com/questions/6855394/splitting-list-in-chunks-of-balanced-weight
     """
+    
+    # handle case where requested jobs > chunks
+    if len(chunks) <= n:
+        n = len(chunks)
+        
     jobs = [[] for i in range(n)]
     sums = {i: 0 for i in range(n)}
     c = 0
@@ -76,10 +81,10 @@ def submit(
     if "lxplus" in os.uname()[1]: machines = []
 
     print("N chunks", len(new_chunks))
-    print(sorted(list(set(list(map(lambda k: k["data"]["dataset"], new_chunks))))))
+    # print(sorted(list(set(list(map(lambda k: k["data"]["dataset"], new_chunks))))))
 
     jobs = split_chunks(new_chunks, njobs)
-    print(len(jobs))
+    print("N jobs", len(jobs))
 
     folders = []
 
@@ -130,8 +135,8 @@ def submit(
     txtjdl += "output = $(Folder)/out.txt\n"
     txtjdl += "error  = $(Folder)/err.txt\n"
     txtjdl += "log    = $(Folder)/log.txt\n"
-    txtjdl += "request_cpus=1\n"
-    txtjdl += "request_memory=2000\n"
+    #txtjdl += "request_cpus=1\n"
+    #txtjdl += "request_memory=5000\n"
     if len(machines) > 0:
         txtjdl += (
             "Requirements = "

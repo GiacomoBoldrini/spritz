@@ -10,9 +10,43 @@ from tqdm import tqdm
 from dbs.apis.dbsClient import DbsApi
 from spritz.framework.framework import get_analysis_dict, get_fw_path
 from spritz.utils import rucio_utils
-
+from XRootD import client
 
 path_fw = get_fw_path()
+
+def list_directories(path):
+    
+    
+    host = path.split("//eos/")[0]
+    path = path.split(host)[1]
+    
+    print("host ", host)
+    print("path ", path)
+    
+    fs = client.FileSystem(host)
+
+    dirs = []
+    status, listing = fs.dirlist(path)
+    
+    print(status, listing)
+    
+    if not status.ok:
+        raise RuntimeError(f"Error: {status}")
+
+    for entry in listing:
+        name = entry.name
+        if entry.statinfo is not None:
+            # We got statinfo, so we can check flags
+            if entry.statinfo.flags & client.flags.StatInfoFlags.IS_DIR:
+                dirs.append(name)
+        else:
+            # No statinfo returned �~F~R fall back to stat() call
+            fullpath = path.rstrip("/") + "/" + name
+            stat_status, statinfo = fs.stat(fullpath)
+            if stat_status.ok and statinfo.flags & client.flags.StatInfoFlags.IS_DIR:
+                dirs.append(name)
+
+    return dirs
 
 def process_file(args):
     found_file, sample_name = args
@@ -37,19 +71,26 @@ def get_files(era, active_samples):
 
     files = {}
     for sampleName in Samples:
+        print(sampleName)
         if "nanoAOD" in Samples[sampleName]:
             files[sampleName] = {"query": Samples[sampleName]["nanoAOD"], "files": []}
         elif "path" in Samples[sampleName]:
             files[sampleName] = {"files": []}
             # handle later the fact that it can have /0000 /0001 etc
             if Samples[sampleName]["path"].startswith("root://"):
+                print("searching for directories in ", Samples[sampleName]["path"])
+                dirs = list_directories(Samples[sampleName]["path"])
+                print(dirs)
                 ctx = gfal2.creat_context()
-                found_files = [os.path.join(Samples[sampleName]["path"], p__) for p__ in ctx.listdir(Samples[sampleName]["path"])]
+                found_files = []
+                for d__ in dirs:
+                    fp = os.path.join(Samples[sampleName]["path"], d__)
+                    found_files += [os.path.join(fp , p__) for p__ in ctx.listdir(fp)]
                 # sanity check 
                 if not all([i.endswith(".root") for i in found_files]):
-                    raise Exception(
-                        "Found files in the directory that are not .root files!"
-                    )
+                    print("Found files in the directory that are not .root files!")
+                    
+                    found_files = [i for i in found_files if i.endswith(".root")]
             else:
                 found_files = glob.glob(Samples[sampleName]["path"])
             print(sampleName)

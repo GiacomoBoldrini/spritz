@@ -17,7 +17,7 @@ lumi = lumis[year]["B"] / 1000  # ERA C of 2017
 # lumi = lumis[year]["tot"] / 1000  # All of 2017
 plot_label = "ZmumuEFT"
 year_label = "2018B"
-njobs = 500
+njobs = 700
 
 runner = f"{fw_path}/src/spritz/runners/runner_3DY.py"
 
@@ -30,29 +30,71 @@ bins = {
     "mll": np.linspace(60, 200, 50)
 }
 
-
-datasets = {}
-
-datasets["DYmm"] = {
-    "files": "DYJetsToMuMu_M-50",
-    "task_weight": 8
-}
-
-datasets["DYee"] = {
-    "files": "DYJetsToEE_M-50",
-    "task_weight": 8
-}
-
-
-datasets["DYtt"] = {
-    "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
-    "task_weight": 8
-}
-
-
-datasets["TTJets"] = {
-    "files": "TTJets",
-    "task_weight": 8
+datasets = {
+    "DYmm_M-50": {
+        "files": "DYJetsToMuMu_M-50",
+        "task_weight": 8,
+    },
+    "DYee_M-50": {
+        "files": "DYJetsToEE_M-50",
+        "task_weight": 8,
+    },
+    "DYtt": {
+        "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
+        "task_weight": 8,
+    },
+    "ST_s-channel": {
+        "files": "ST_s-channel",
+        "task_weight": 8,
+    },
+    "ST_t-channel_top_5f": {
+        "files": "ST_t-channel_top_5f",
+        "task_weight": 8,
+    },
+    "ST_t-channel_antitop_5f": {
+        "files": "ST_t-channel_antitop_5f",
+        "task_weight": 8,
+    },
+    "ST_tW_top_noHad": {
+        "files": "ST_tW_top_noHad",
+        "task_weight": 8,
+    },
+    "ST_tW_antitop_noHad": {
+        "files": "ST_tW_antitop_noHad",
+        "task_weight": 8,
+    },
+    "TTTo2L2Nu": {
+        "files": "TTTo2L2Nu",
+        "task_weight": 8,
+    },
+    "WW": {
+        "files": "WWTo2L2Nu",
+        "task_weight": 8,
+    },
+    "WZ": {
+        "files": "WZ_TuneCP5_13TeV-pythia8",
+        "task_weight": 8,
+    },
+    "ZZ": {
+        "files": "ZZ_TuneCP5_13TeV-pythia8",
+        "task_weight": 8,
+    },
+    "WJetsToLNu_0J": {
+        "files": "WJetsToLNu_0J",
+        "task_weight": 8,
+    },
+    "WJetsToLNu_1J": {
+        "files": "WJetsToLNu_1J",
+        "task_weight": 8,
+    },
+    "WJetsToLNu_2J": {
+        "files": "WJetsToLNu_2J",
+        "task_weight": 8,
+    },
+    "GGToLL": {
+        "files": "GGToLL_M50",
+        "task_weight": 8,
+    }
 }
 
 top_samples = [
@@ -61,31 +103,69 @@ top_samples = [
         "ST_t-channel_top_5f",
         "ST_tW_antitop_noHad",
         "ST_tW_top_noHad",
+        "TTTo2L2Nu"
     ]
 
-for i, sample in enumerate(
-    top_samples
-):
-    datasets[sample] = {
-        "files": sample,
-        "task_weight": 8
-    }
-
-for sample in ["WW", "WZ", "ZZ"]:
-    datasets[sample] = {
-        "files": f"{sample}_TuneCP5_13TeV-pythia8",
-        "task_weight": 8
-    }
-
-datasets["WJetsToLNu"] = {
-    "files": "WJetsToLNu-LO",
-    "task_weight": 8
-}
-
-datasets["GGToLL"] = {
-    "files": "GGToLL_M50",
-    "task_weight": 8
-}
+wjets_samples = [
+        "WJetsToLNu_0J",
+        "WJetsToLNu_1J",
+        "WJetsToLNu_2J"
+        ]
+# datasets = {}
+# 
+# datasets["DYmm"] = {
+#     "files": "DYJetsToMuMu_M-50",
+#     "task_weight": 8
+# }
+# 
+# datasets["DYee"] = {
+#     "files": "DYJetsToEE_M-50",
+#     "task_weight": 8
+# }
+# 
+# 
+# datasets["DYtt"] = {
+#     "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
+#     "task_weight": 8
+# }
+# 
+# 
+# datasets["TTJets"] = {
+#     "files": "TTJets",
+#     "task_weight": 8
+# }
+# 
+# top_samples = [
+#         "ST_s-channel",
+#         "ST_t-channel_antitop_5f",
+#         "ST_t-channel_top_5f",
+#         "ST_tW_antitop_noHad",
+#         "ST_tW_top_noHad",
+#     ]
+# 
+# for i, sample in enumerate(
+#     top_samples
+# ):
+#     datasets[sample] = {
+#         "files": sample,
+#         "task_weight": 8
+#     }
+# 
+# for sample in ["WW", "WZ", "ZZ"]:
+#     datasets[sample] = {
+#         "files": f"{sample}_TuneCP5_13TeV-pythia8",
+#         "task_weight": 8
+#     }
+# 
+# datasets["WJetsToLNu"] = {
+#     "files": "WJetsToLNu-LO",
+#     "task_weight": 8
+# }
+# 
+# datasets["GGToLL"] = {
+#     "files": "GGToLL_M50",
+#     "task_weight": 8
+# }
 
 
 for dataset in datasets:
@@ -148,7 +228,7 @@ samples["Data"] = {
 }
 #####
 samples["WJetsToLNu"] = {
-    "samples": ["WJetsToLNu"],
+    "samples": wjets_samples,
 }
 colors["WJetsToLNu"] = cmap_pastel[5]
 #####
@@ -163,10 +243,7 @@ samples["VV"] = {
 colors["VV"] = cmap_pastel[4]
 #####
 samples["Top"] = {
-    "samples": [
-        "TTJets",
-    ]
-    + top_samples,
+    "samples": top_samples,
 }
 colors["Top"] = cmap_pastel[3]
 #####
@@ -175,47 +252,47 @@ samples["DYtt"] = {
 }
 colors["DYtt"] = cmap_pastel[2]
 #####
-samples["DYee"] = {
-    "samples": ["DYee"],
+samples["DYee_M-50"] = {
+    "samples": ["DYee_M-50"],
 }
-colors["DYee"] = cmap_pastel[0]
+colors["DYee_M-50"] = cmap_pastel[0]
 #####
-samples["DYmm"] = {
-    "samples": ["DYmm"],
+samples["DYmm_M-50"] = {
+    "samples": ["DYmm_M-50"],
 }
-colors["DYmm"] = cmap_pastel[1]
+colors["DYmm_M-50"] = cmap_pastel[1]
 #####
 
 
 
 
 # regions
-preselections = lambda events: (events.mll > 60) & (events.mll < 180) & (events.weight < 1000) # noqa E731
+preselections = lambda events: (events.mll > 60) & (events.mll < 180) # noqa E731
 
 regions = {}
 
 regions["inc_ee"] = {
-    "func": lambda events: events["ee"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "func": lambda events: events["ee"] & (events.mll > 60) & (events.mll < 180),
     "mask": 0,
 }
 
 regions["inc_emu"] = {
-    "func": lambda events: events["emu"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "func": lambda events: events["emu"]  & (events.mll > 60) & (events.mll < 180),
     "mask": 0,
 }
 
 regions["inc_mm"] = {
-    "func": lambda events: events["mm"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "func": lambda events: events["mm"]  & (events.mll > 60) & (events.mll < 180),
     "mask": 0,
 }
 
 regions["inc_ee_ss"] = {
-    "func": lambda events: events["ee_ss"] & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "func": lambda events: events["ee_ss"] & (events.mll > 60) & (events.mll < 180),
     "mask": 0,
 }
 
 regions["inc_mm_ss"] = {
-    "func": lambda events: events["mm_ss"]  & (events.mll > 60) & (events.mll < 180) & (events.weight < 1000),
+    "func": lambda events: events["mm_ss"]  & (events.mll > 60) & (events.mll < 180),
     "mask": 0,
 }
 

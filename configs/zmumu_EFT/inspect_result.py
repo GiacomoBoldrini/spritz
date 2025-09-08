@@ -27,9 +27,9 @@ def read_inputs(inputs: list[str]) -> list[Result]:
         new_job_result = []
         if isinstance(job_result, list):
             for job_result_single in job_result:
-                print(job_result_single)
+                # print(job_result_single)
                 if job_result_single["result"] != {}:
-                    print("HELLO")
+                    # print("HELLO")
                     new_job_result.append(job_result_single["result"]["real_results"])
             # job_result = new_job_result
             # if check_input(job_result):
@@ -48,4 +48,14 @@ def read_inputs(inputs: list[str]) -> list[Result]:
 if __name__ == "__main__":
 
     file = sys.argv[1]
-    print(read_inputs([file]))
+    # print(read_inputs([file]))
+    f = read_inputs([file])
+    print(f)
+    for idx in range(len(f)):
+        print(idx)
+        for key in f[idx].keys():
+            if key.startswith("DY"):
+                meanw = 2000
+                sumw_exp = f[idx][key]["nevents"] * meanw
+                if f[idx][key]["sumw"] > sumw_exp:
+                    print(f"file: {file}, dataset: {key}, sumw: {f[idx][key]["sumw"]}, nevemnts:{f[idx][key]["nevents"]}")
