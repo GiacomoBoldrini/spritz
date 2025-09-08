@@ -87,18 +87,30 @@
     "# All XS set to 1. I havent even looked at them",
     "# WW aTGCs"
   ],
-  "samples": {
+    "samples": {
     "DoubleMuon_Run2018A-UL2018-v1": {
       "nanoAOD": "/DoubleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+    },
+    "DoubleMuon_Run2018A-UL2018-GT36": {
+      "nanoAOD": "/DoubleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
     },
     "DoubleMuon_Run2018B-UL2018-v2": {
       "nanoAOD": "/DoubleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
     },
+    "DoubleMuon_Run2018B-UL2018-GT36": {
+      "nanoAOD": "/DoubleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
+    },
     "DoubleMuon_Run2018C-UL2018-v1": {
       "nanoAOD": "/DoubleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
     },
+    "DoubleMuon_Run2018C-UL2018-GT36": {
+      "nanoAOD": "/DoubleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
+    },
     "DoubleMuon_Run2018D-UL2018-v2": {
       "nanoAOD": "/DoubleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+    },
+    "DoubleMuon_Run2018D-UL2018-GT36": {
+      "nanoAOD": "/DoubleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
     },
     "EGamma_Run2018A-UL2018-v1": {
       "nanoAOD": "/EGamma/Run2018A-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
@@ -127,14 +139,26 @@
     "SingleMuon_Run2018A-UL2018-v2": {
       "nanoAOD": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
     },
+    "SingleMuon_Run2018A-UL2018-GT36": {
+      "nanoAOD": "/SingleMuon/Run2018A-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
+    },
     "SingleMuon_Run2018B-UL2018-v2": {
       "nanoAOD": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
+    },
+    "SingleMuon_Run2018B-UL2018-GT36": {
+      "nanoAOD": "/SingleMuon/Run2018B-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
     },
     "SingleMuon_Run2018C-UL2018-v2": {
       "nanoAOD": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9-v2/NANOAOD"
     },
+    "SingleMuon_Run2018C-UL2018-GT36": {
+      "nanoAOD": "/SingleMuon/Run2018C-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
+    },
     "SingleMuon_Run2018D-UL2018-v1": {
       "nanoAOD": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9-v1/NANOAOD"
+    },
+    "SingleMuon_Run2018D-UL2018-GT36": {
+      "nanoAOD": "/SingleMuon/Run2018D-UL2018_MiniAODv2_NanoAODv9_GT36-v1/NANOAOD"
     },
     "WJetsToLNu_0J": {
       "nanoAOD": "/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer20UL18NanoAODv9-106X_upgrade2018_realistic_v16_L1v1-v1/NANOAODSIM",
