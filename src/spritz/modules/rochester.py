@@ -19,7 +19,7 @@ def correctRochester(events, is_data, rochester, s=5):
 
     if is_data:
         muSF = rochester.kScaleDT(
-            muons["charge"], muons["pt"], muons["eta"], muons["phi"]
+            muons["charge"], muons["pt"], muons["eta"], muons["phi"], s
         )
     else:
         muons["right_genPartIdx"] = ak.mask(

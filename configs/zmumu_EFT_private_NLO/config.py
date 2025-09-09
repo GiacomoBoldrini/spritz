@@ -63,260 +63,325 @@ datasets = {
     #     "files": "DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos",
     #     "task_weight": 8,
     # },
+    
     "DYtt_M-50": {
         "files": "DYJetsToTauTau_M-50_AtLeastOneEorMuDecay",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYee_M-50": {
         "files": "DYJetsToEE_M-50",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-100to20": {
         "files": "DYJetsToEE_M-100to200",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-200to400": {
         "files": "DYJetsToEE_M-200to400",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-400to500": {
         "files": "DYJetsToEE_M-400to500",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-500to700": {
         "files": "DYJetsToEE_M-500to700",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-700to800": {
         "files": "DYJetsToEE_M-700to800",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-800to1000": {
         "files": "DYJetsToEE_M-800to1000",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-1000to1500": {
         "files": "DYJetsToEE_M-1000to1500",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-1500to2000": {
         "files": "DYJetsToEE_M-1500to2000",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToEE_M-2000toInf": {
         "files": "DYJetsToEE_M-2000toInf",
         "task_weight": 8,
-        "max_weight": 1e9
+        "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYmm_M-50": {
         "files": "DYJetsToMuMu_M-50",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-100to200": {
         "files": "DYJetsToMuMu_M-100to200",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-200to400": {
         "files": "DYJetsToMuMu_M-200to400",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-400to500": {
         "files": "DYJetsToMuMu_M-400to500",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-500to700": {
         "files": "DYJetsToMuMu_M-500to700",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-700to800": {
         "files": "DYJetsToMuMu_M-700to800",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-800to1000": {
         "files": "DYJetsToMuMu_M-800to1000",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-1000to1500": {
         "files": "DYJetsToMuMu_M-1000to1500",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-1500to2000": {
         "files": "DYJetsToMuMu_M-1000to1500",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "DYJetsToMuMu_M-2000toInf": {
         "files": "DYJetsToMuMu_M-2000toInf",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 100
     },
     "ST_s-channel": {
         "files": "ST_s-channel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "ST_t-channel_top_5f": {
         "files": "ST_t-channel_top_5f",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "ST_t-channel_antitop_5f": {
         "files": "ST_t-channel_antitop_5f",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "ST_tW_top_noHad": {
         "files": "ST_tW_top_noHad",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "ST_tW_antitop_noHad": {
         "files": "ST_tW_antitop_noHad",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "TTTo2L2Nu": {
         "files": "TTTo2L2Nu",
         "task_weight": 8,
         "top_pt_rwgt": True,
+        "max_chunks": 100
     },
     "WWTo2L2Nu": {
         "files": "WWTo2L2Nu",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "WZ": {
         "files": "WZ_TuneCP5_13TeV-pythia8",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "ZZ": {
         "files": "ZZ_TuneCP5_13TeV-pythia8",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-50to200_El-El": {
         "files": "GGToEE_M-50to200_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-50to200_Inel-El_El-Inel": {
         "files": "GGToEE_M-50to200_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-50to200_Inel-Inel": {
         "files": "GGToEE_M-50to200_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-200to1500_El-El": {
         "files": "GGToEE_M-200to1500_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-200to1500_Inel-El_El-Inel": {
         "files": "GGToEE_M-200to1500_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-200to1500_Inel-Inel": {
         "files": "GGToEE_M-200to1500_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-1500toInf_El-El": {
         "files": "GGToEE_M-1500toInf_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-1500toInf_Inel-El_El-Inel": {
         "files": "GGToEE_M-1500toInf_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToEE_M-1500toInf_Inel-Inel": {
         "files": "GGToEE_M-1500toInf_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-50to200_El-El": {
         "files": "GGToMuMu_M-50to200_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-50to200_Inel-El_El-Inel": {
         "files": "GGToMuMu_M-50to200_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-50to200_Inel-Inel": {
         "files": "GGToMuMu_M-50to200_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-200to1500_El-El": {
         "files": "GGToMuMu_M-200to1500_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-200to1500_Inel-El_El-Inel": {
         "files": "GGToMuMu_M-200to1500_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-200to1500_Inel-Inel": {
         "files": "GGToMuMu_M-200to1500_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-1500toInf_El-El": {
         "files": "GGToMuMu_M-1500toInf_El-El",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-1500toInf_Inel-El_El-Inel": {
         "files": "GGToMuMu_M-1500toInf_Inel-El_El-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "GGToMuMu_M-1500toInf_Inel-Inel": {
         "files": "GGToMuMu_M-1500toInf_Inel-Inel",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "WJetsToLNu_0J": {
         "files": "WJetsToLNu_0J",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "WJetsToLNu_1J": {
         "files": "WJetsToLNu_1J",
         "task_weight": 8,
+        "max_chunks": 100
     },
     "WJetsToLNu_2J": {
         "files": "WJetsToLNu_2J",
         "task_weight": 8,
+        "max_chunks": 100
     }
+    
 }
+
+
 
 for dataset in datasets:
     datasets[dataset]["read_form"] = "mc"
 
 
 DataRun = [
-    ["A", "Run2018A-UL2018-v1"],
+    #["A", "Run2018A-UL2018-v1"],
     ["B", "Run2018B-UL2018-v1"],
-    ["C", "Run2018C-UL2018-v1"],
-    ["D", "Run2018D-UL2018-v1"],
+    #["C", "Run2018C-UL2018-v1"],
+    #["D", "Run2018D-UL2018-v1"],
 ]
 
-DataSets = ["SingleMuon", "EGamma"]
+DataSets = ["SingleMuon", "EGamma", "DoubleMuon"]
 
 DataTrig = {
-    "SingleMuon": "events.SingleMu",
-    "EGamma": "(~events.SingleMu) & (events.SingleEle)"
+    "DoubleMuon": "events.DoubleMu",
+    "SingleMuon": "(~events.DoubleMu) & events.SingleMu",
+    "EGamma": "(~events.DoubleMu) & (~events.SingleMu) & (events.SingleEle | events.DoubleEle)",
 }
-
 
 samples_data = []
 for era, sd in DataRun:
     for pd in DataSets:
         tag = pd + "_" + sd
 
-        if "Run2018" in sd and "Muon" in pd:
-            tag = tag.replace("v1","GT36")
+        # # FIXME limit to only first era
+        if era != "B":
+            continue
+
+        if (
+            ("DoubleMuon" in pd and "Run2018B" in sd)
+            or ("DoubleMuon" in pd and "Run2018D" in sd)
+            or ("SingleMuon" in pd and "Run2018A" in sd)
+            or ("SingleMuon" in pd and "Run2018B" in sd)
+            or ("SingleMuon" in pd and "Run2018C" in sd)
+        ):
+            tag = tag.replace("v1", "v2")
 
         datasets[f"{pd}_{era}"] = {
             "files": tag,
@@ -326,6 +391,7 @@ for era, sd in DataRun:
             "era": f"UL2018{era}",
         }
         samples_data.append(f"{pd}_{era}")
+
 
 
 
@@ -384,7 +450,7 @@ samples = {
        "samples": [
             "WWTo2L2Nu",
             "WZ",
-            "ZZ"
+            # "ZZ"
        ]
     },
     "DYtt": {
@@ -395,25 +461,25 @@ samples = {
     "DYll": {
        "samples": [
            "DYmm_M-50",
-           "DYJetsToMuMu_M-100to200",
-           "DYJetsToMuMu_M-200to400",
-           "DYJetsToMuMu_M-400to500",
-           "DYJetsToMuMu_M-500to700",
-           "DYJetsToMuMu_M-700to800",
-           "DYJetsToMuMu_M-800to1000",
-           "DYJetsToMuMu_M-1000to1500",
-           "DYJetsToMuMu_M-1500to2000",
-           "DYJetsToMuMu_M-2000toInf",
+           # "DYJetsToMuMu_M-100to200",
+           # "DYJetsToMuMu_M-200to400",
+           # "DYJetsToMuMu_M-400to500",
+           # "DYJetsToMuMu_M-500to700",
+           # "DYJetsToMuMu_M-700to800",
+           # "DYJetsToMuMu_M-800to1000",
+           # "DYJetsToMuMu_M-1000to1500",
+           # "DYJetsToMuMu_M-1500to2000",
+           # "DYJetsToMuMu_M-2000toInf",
            "DYee_M-50",
-           "DYJetsToEE_M-100to20",
-           "DYJetsToEE_M-200to400",
-           "DYJetsToEE_M-400to500",
-           "DYJetsToEE_M-500to700",
-           "DYJetsToEE_M-700to800",
-           "DYJetsToEE_M-800to1000",
-           "DYJetsToEE_M-1000to1500",
-           "DYJetsToEE_M-1500to2000",
-           "DYJetsToEE_M-2000toInf",
+           # "DYJetsToEE_M-100to20",
+           # "DYJetsToEE_M-200to400",
+           # "DYJetsToEE_M-400to500",
+           # "DYJetsToEE_M-500to700",
+           # "DYJetsToEE_M-700to800",
+           # "DYJetsToEE_M-800to1000",
+           # "DYJetsToEE_M-1000to1500",
+           # "DYJetsToEE_M-1500to2000",
+           # "DYJetsToEE_M-2000toInf",
        ],
        # "samples": [
        #     "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos",
@@ -454,7 +520,7 @@ colors["DYll"] = cmap_pastel[6]
 
 #####
 
-print("Samples:", samples_data)
+print("Samples:", samples)
 
 # regions
 preselections = lambda events: (events.mll > 50)  # noqa E731
@@ -472,37 +538,11 @@ regions["inc_ee"] = {
 }
 
 regions["inc_emu"] = {
-    "func": lambda events: events["emu"]  & (events.mll > 50),
+    "func": lambda events: events["em"]  & (events.mll > 50),
     "mask": 0,
 }
 
 """
-regions["inc_ee"] = {
-    "func": lambda events: events["ee"] & (events.mll > 116) & (events.mll < 150),
-    "mask": 0,
-}
-
-regions["inc_emu"] = {
-    "func": lambda events: events["emu"]  & (events.mll > 116) & (events.mll < 150),
-    "mask": 0,
-}
-
-regions["inc_mm"] = {
-    "func": lambda events: events["mm"]  & (events.mll > 116) & (events.mll < 150),
-    "mask": 0,
-}
-
-regions["inc_ee_ss"] = {
-    "func": lambda events: events["ee_ss"] & (events.mll > 116) & (events.mll < 150),
-    "mask": 0,
-}
-
-regions["inc_mm_ss"] = {
-    "func": lambda events: events["mm_ss"]  & (events.mll > 116) & (events.mll < 150),
-    "mask": 0,
-}
-"""
-
 gen_mll_bins = [50, 100, 200, 400, 600, 800, 1000, 1500, 15000]
 costheta_bins = [-1, -0.6, -0.2, 0.2, 0.6, 1]
 yZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
@@ -628,7 +668,120 @@ variables["triple_diff_theory"] = {
     "func": lambda events: events.Lepton[:, 0].eta,
     "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(yZ_bins, name="yZ_bins")]
 }
+"""
 
+regions = {
+    "inc_ee": {
+        "func": lambda events: preselections(events) & (events.mll < 500) & events["ee"],
+        "mask": 0
+    },
+    "inc_mm": {
+        "func": lambda events: preselections(events) & (events.mll < 500) & events["mm"],
+        "mask": 0
+    },
+    "inc_em": {
+        "func": lambda events: preselections(events) & events["em"],
+        "mask": 0
+    },
+    "inc_ee_ss": {
+        "func": lambda events: preselections(events) & (events.mll < 500) & events["ee_ss"],
+        "mask": 0
+    },
+    "inc_mm_ss": {
+        "func": lambda events: preselections(events) & (events.mll < 500) & events["mm_ss"],
+        "mask": 0
+    },
+    "inc_em_ss": {
+        "func": lambda events: preselections(events) & events["em_ss"],
+        "mask": 0
+    },
+}
+
+def cos_theta_star(l1, l2):
+    get_sign = lambda nr: nr/abs(nr)
+    return 2*get_sign((l1+l2).pz)/(l1+l2).mass * get_sign(l1.pdgId)*(l2.pz*l1.energy-l1.pz*l2.energy)/np.sqrt(((l1+l2).mass)**2+((l1+l2).pt)**2)
+
+variables = {
+    # Dilepton
+    "mll": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Regular(60, 50, 200, name="mll")
+    },
+    "mll_medium": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Variable([50,58,64,72,78,84,90,96,102,108,116,124,132,140,
+            148,156,164,172,180,190,200,210,220,230,240,255,270,285,300,325,350,375,
+            400,450,500], name="mll_medium")
+    },
+    "mll_high": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Variable([50,80,110,130,150,175,200,225,250,275,300,325,350,
+            400,450,500,600,800,1000,2000], name="mll_high")
+    },
+    "ptll": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).pt,
+        "axis": hist.axis.Regular(60, 0, 600, name="ptll"),
+    },
+    "etall": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
+        "axis": hist.axis.Regular(80, -8, 8, name="etall"),
+    },
+    "etall_abs": {
+        "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).eta),
+        "axis": hist.axis.Regular(45, 0, 9, name="etall_abs"),
+    },
+    "rapll": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).rapidity,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="rapll"),
+    },
+    "rapll_abs": {
+        "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).rapidity),
+        "axis": hist.axis.Regular(60, 0, 3, name="rapll_abs"),
+    },
+    "detall": {
+        "func": lambda events: abs(events.Lepton[:, 0].deltaeta(events.Lepton[:, 1])),
+        "axis": hist.axis.Regular(50, 0, 5, name="detall")
+    },
+    "dphill": {
+        "func": lambda events: abs(events.Lepton[:, 0].deltaphi(events.Lepton[:, 1])),
+        "axis": hist.axis.Regular(63, 0, 3.15, name="dphill")
+    },
+    "dRll": {
+        "func": lambda events: events.Lepton[:, 0].deltaR(events.Lepton[:, 1]),
+        "axis": hist.axis.Regular(60, 0, 6, name="dRll")
+    },
+    "costhetastar": {
+        "func": lambda events: cos_theta_star(events.Lepton[:, 0], events.Lepton[:, 1]),
+        "axis": hist.axis.Regular(50, -1, 1, name="costhetastar")
+    },
+    "ptl1": {
+        "func": lambda events: events.Lepton[:, 0].pt,
+        "axis": hist.axis.Regular(60, 20, 320, name="ptl1")
+    },
+    "ptl1_high": {
+        "func": lambda events: events.Lepton[:, 0].pt,
+        "axis": hist.axis.Variable([20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,
+            190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,
+            400,415,430,445,460,480,500,525,550,575,600,650,700,800], name="ptl1_high")
+    },
+    "ptl2": {
+        "func": lambda events: events.Lepton[:, 1].pt,
+        "axis": hist.axis.Regular(60, 10, 160, name="ptl2")
+    },
+    "ptl2_high": {
+        "func": lambda events: events.Lepton[:, 1].pt,
+        "axis": hist.axis.Variable([10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,
+            180,190,200,215,230,250,290,350,450], name="ptl2_high")
+    },
+    "etal1": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal1")
+    },
+    "etal2": {
+        "func": lambda events: events.Lepton[:, 1].eta,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal2")
+    },
+}
 
 nuisances = {
     "lumi": {

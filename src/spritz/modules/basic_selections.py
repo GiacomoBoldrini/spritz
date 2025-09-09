@@ -10,7 +10,7 @@ from numba.typed import Dict
 
 
 def pass_trigger(events, year):
-    keys = ["SingleEle", "SingleMu"]
+    keys = ["SingleEle", "DoubleEle", "SingleMu", "DoubleMu"]
     for key in keys:
         events[key] = ak.ones_like(events.weight) == 0.0  # all False
 

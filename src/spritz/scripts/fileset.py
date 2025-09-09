@@ -57,7 +57,7 @@ def process_file(args):
     except Exception as e:
         return {"sample_name": sample_name, "path": [found_file], "nevents": 0, "error": str(e)}
 
-def get_files(era, active_samples):
+def get_files(era, active_samples, pfs={}):
     Samples = {}
 
     with open(f"{path_fw}/data/{era}/samples/samples.json") as file:
@@ -75,6 +75,10 @@ def get_files(era, active_samples):
         if "nanoAOD" in Samples[sampleName]:
             files[sampleName] = {"query": Samples[sampleName]["nanoAOD"], "files": []}
         elif "path" in Samples[sampleName]:
+            if sampleName in pfs.keys(): 
+                print(f"Sample {sampleName} already present in the provided fileset, skipping the search for files")
+                files[sampleName] = pfs[sampleName]
+                continue
             files[sampleName] = {"files": []}
             # handle later the fact that it can have /0000 /0001 etc
             if Samples[sampleName]["path"].startswith("root://"):
@@ -130,11 +134,22 @@ def get_files(era, active_samples):
 
 
 def main():
+    
+    recycle = False
+    if len(sys.argv) > 1:
+        recycle = sys.argv[1] == "-r"
+        
     an_dict = get_analysis_dict()
     era = an_dict["year"]
     datasets = [k["files"] for k in an_dict["datasets"].values()]
-    files = get_files(era, datasets)
-    print(files)
+    
+    # avoid to search for files already present 
+    present_fileset = {}
+    if recycle and os.path.isfile("data/fileset.json"):
+        with open("data/fileset.json", "r") as f:
+            present_fileset = json.load(f)
+            
+    files = get_files(era, datasets, pfs=present_fileset)
     rucio_client = rucio_utils.get_rucio_client()
     # DE|FR|IT|BE|CH|ES|UK
     good_sites = ["IT", "FR", "BE", "CH", "UK", "ES", "DE", "US"]
