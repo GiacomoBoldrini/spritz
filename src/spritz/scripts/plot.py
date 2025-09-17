@@ -225,7 +225,7 @@ def plot_ratio(ax, x, edges, numerator, denominator, yrange=None):
     #ax.set_ylim(min(1-ylim, 0.94), max(1+ylim, 1.06))
     ax.set_xlim(np.min(edges), np.max(edges))
 
-    ax.set_ylim(0.95, 1.05)
+    ax.set_ylim(0.91, 1.09)
 
 
 def plot(
@@ -270,9 +270,9 @@ def plot(
         ydata_up = histos['Data']['stat_up'].copy() - ydata
         ydata_down = ydata - histos['Data']['stat_down'].copy()
     else:
-        ydata = np.zeros_like(ydata)
-        ydata_up = np.zeros_like(ydata)
-        ydata_down = np.zeros_like(ydata)
+        ydata = np.zeros_like(ymc)
+        ydata_up = np.zeros_like(ymc)
+        ydata_down = np.zeros_like(ymc)
     if 'sr' in region:
         ydata = np.where(blind_mask, np.zeros_like(ydata), ydata)
         ydata_up = np.where(blind_mask, np.zeros_like(ydata), ydata_up)
@@ -464,7 +464,7 @@ def main():
     print("Doing plots")
 
     proc = subprocess.Popen(
-        "mkdir -p plots && mkdir -p plots/corrections && " + f"cp {get_fw_path()}/data/common/index.php plots/",
+        "mkdir -p plots && " + f"cp {get_fw_path()}/data/common/index.php plots/",
         shell=True,
     )
     proc.wait()
@@ -478,10 +478,14 @@ def main():
 
     cpus = 10
 
+    file__ = "histos.root"
+    if len(sys.argv) > 1:
+        file__ = sys.argv[1]
+
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpus) as executor:
         tasks = []
 
-        input_file = uproot.open("histos.root")
+        input_file = uproot.open(file__)
         for region in regions:
             for variable in variables:
                 if "axis" not in variables[variable]:

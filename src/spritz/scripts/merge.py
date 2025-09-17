@@ -21,8 +21,12 @@ parser.add_argument('-f', '--filenames',   dest='filenames',     help='list of f
 parser.add_argument('-o', '--output',   dest='output',
                         help='The file name for the output merged file. By default results_merged_new.pkl', required=False, default="results_merged_new.pkl", type=str)
 
+parser.add_argument('--skip-events',   dest='skip_events',
+                        help='Do not merge events fields (saves memory). Only merge histos', required=False, default=False, action="store_true")
+
 args, _ = parser.parse_known_args()
 
+print("ARGS", args)
 MERGE_RESULT_FNAME = "tmp_special_"
 
 """
@@ -48,8 +52,8 @@ def read_inputs(inputs: list[str]) -> list[Result]:
     inputs_obj = []
     for input in inputs:
         job_result = read_chunks(input)
-        #print("JOB RESULT")
-        #print(job_result, job_result == -99999, inputs)
+        # print("JOB RESULT")
+        # print(job_result, job_result == -99999, inputs)
         new_job_result = []
         if isinstance(job_result, list):
             for job_result_single in job_result:
@@ -83,13 +87,24 @@ def postprocess_inputs(inputs):
             print("removing", input)
             os.remove(input)
 
-
+"""
 def reduction(inputs, reduce_function, output):
     inputs_obj = read_inputs(inputs)
     result = reduce_function(inputs_obj)
     postprocess_inputs(inputs)
     print("writing to", output)
     write_chunks(result, output)
+"""
+def reduction(inputs, reduce_function, output):
+    try:
+        inputs_obj = read_inputs(inputs)
+        result = reduce_function(inputs_obj)
+        postprocess_inputs(inputs)
+        print("writing to", output)
+        write_chunks(result, output)
+    except Exception as e:
+        print("ERROR in reduction:", e)
+        raise
 
 
 def split_inputs(inputs, elements_for_task):
@@ -101,12 +116,11 @@ def split_inputs(inputs, elements_for_task):
         if start == stop:
             break
         splits.append(slice(start, stop))
-
     return splits
 
 
 def create_tree(inputs, reduce_function, output, executor, elements_for_task=10):
-    if len(inputs) <= elements_for_task:
+    if len(inputs) < elements_for_task:
         reduction(inputs, reduce_function, output)
 
     else:
@@ -147,7 +161,7 @@ def main():
     reduce_function = sum
     reduce_function = add_dict_iterable
     elements_for_task = 10 if len(inputs) >= 10 else len(inputs)
-    cpus = 10 if len(inputs) >= 10 else len(inputs)
+    cpus = 100 if len(inputs) >= 100 else len(inputs)
     with concurrent.futures.ProcessPoolExecutor(max_workers=cpus) as executor:
         create_tree(
             inputs,

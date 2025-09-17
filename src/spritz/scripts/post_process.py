@@ -341,7 +341,11 @@ def main():
             xss[flat_dataset] = eval(samples_xs["samples"][key]["xsec"])
 
     print(xss)
-    results = read_chunks(f"{get_batch_cfg()["BATCH_SYSTEM"]}/results_merged_new.pkl")
+    file__ = f"{get_batch_cfg()["BATCH_SYSTEM"]}/results_merged_new.pkl"
+    if len(sys.argv) > 1:
+        file__ = sys.argv[1]
+
+    results = read_chunks(file__)
     print(results.keys())
     # sys.exit()
     post_process(results, regions, variables, check_weights, samples, xss, nuisances, lumi)

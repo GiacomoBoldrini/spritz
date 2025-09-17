@@ -116,7 +116,8 @@ def process(events, **kwargs):
         events = events[events.pass_weightfilter]
 
     sumw = ak.sum(events.weight)
-    nevents = ak.num(events.weight, axis=0)
+    nevents_raw = ak.num(events.weight, axis=0)
+    nevents = int(np.array(nevents_raw).sum())  # ensures a scalar int
     print("SumW and NEvents before cuts")
     print(sumw, nevents)
     print('-----')
@@ -141,7 +142,7 @@ def process(events, **kwargs):
         events = events[eval(trigger_sel)]
 
     # we do not need to build jets for the time being
-    events = jetSel(events, cfg)
+    # events = jetSel(events, cfg)
 
     events = createLepton(events)
 
@@ -531,6 +532,15 @@ def process(events, **kwargs):
                     # * events.EMTFbug_veto
                     * events["LHEReweightingWeight"][:, 0] # SM
                 )
+                
+        # buld Gen level variables
+        if not isData:
+            events = gen_analysis(events, dataset)
+        else:
+            # If it is data just fill random stuff so that things do not complain
+            events["Gen_mll"] = ak.full_like(events.weight, -10.0)
+            events["Gen_ptll"] = ak.full_like(events.weight, -10.0)
+            events["Gen_dphill"] = ak.full_like(events.weight, -10.0)
 
         ##################################################
         # Variable definitions
@@ -661,10 +671,40 @@ def process(events, **kwargs):
 
         # Fill histograms
         for dataset_name in results:
+            results[dataset_name]["events"] = {}
             for region in regions:
+                results[dataset_name]["events"][region] = {}
                 for cwgt in check_weights:
                     events[cwgt] = check_weights[cwgt]["func"](events) if not isData else events.weight
-
+                    mask = regions[region]["mask"] & events[dataset_name]
+                    for variable in variables:
+                        if ("save_events" in variables[variable].keys()) and (variables[variable]["save_events"]): 
+                            results[dataset_name]["events"][region][variable] = events[variable][mask]
+                            if "weight" not in results[dataset_name]["events"][region].keys(): results[dataset_name]["events"][region]["weight"] = events["weight"][mask]
+                            
+                        if isinstance(variables[variable]["axis"], list):
+                            var_names = [k.name for k in variables[variable]["axis"]]
+                            vals = {
+                                var_name: events[var_name][mask] for var_name in var_names
+                            }
+                            results[dataset_name]["histos"][variable].fill(
+                                **vals,
+                                category=region,
+                                syst=variation,
+                                check_weights=cwgt,
+                                weight=events[cwgt][mask],
+                            )
+                        else:
+                            var_name = variables[variable]["axis"].name
+                            results[dataset_name]["histos"][variable].fill(
+                                events[var_name][mask],
+                                category=region,
+                                syst=variation,
+                                check_weights=cwgt,
+                                weight=events[cwgt][mask],
+                            )
+                        
+                    """
                     # for category in categories:
                     # Apply mask for specific region, category and dataset_name
                     mask = regions[region]["mask"] & events[dataset_name]
@@ -697,6 +737,7 @@ def process(events, **kwargs):
                                 check_weights=cwgt,
                                 weight=events[cwgt][mask],
                             )
+                    """
 
     gc.collect()
     return results

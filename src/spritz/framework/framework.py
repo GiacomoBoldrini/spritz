@@ -149,32 +149,45 @@ def read_events(filename, start=0, stop=100, read_form={}):
     gc.collect()
     return _events
 
-
+"""
 def add_dict(d1, d2):
-    if isinstance(d1, dict):
+    # Allow awkward and numpy arrays to mix
+    if isinstance(d1, ak.highlevel.Array) and isinstance(d2, np.ndarray):
+        return ak.concatenate([d1, ak.from_numpy(d2)])
+    if isinstance(d2, ak.highlevel.Array) and isinstance(d1, np.ndarray):
+        return ak.concatenate([ak.from_numpy(d1), d2])
+
+    # Handle dicts recursively
+    if isinstance(d1, dict) and isinstance(d2, dict):
         d = {}
-        common_keys = set(list(d1.keys())).intersection(list(d2.keys()))
+        common_keys = set(d1.keys()) & set(d2.keys())
         for key in common_keys:
             d[key] = add_dict(d1[key], d2[key])
         for key in d1:
-            if key in common_keys:
-                continue
-            d[key] = d1[key]
+            if key not in common_keys:
+                d[key] = d1[key]
         for key in d2:
-            if key in common_keys:
-                continue
-            d[key] = d2[key]
-
+            if key not in common_keys:
+                d[key] = d2[key]
         return d
-    elif isinstance(d1, ak.highlevel.Array):
+
+    # Awkward arrays
+    if isinstance(d1, ak.highlevel.Array) and isinstance(d2, ak.highlevel.Array):
         return ak.concatenate([d1, d2])
-    elif isinstance(d1, np.ndarray) and len(d1.shape) != 0:
-        print("Debug np", d1, d2)
+
+    # Numpy arrays (skip scalars)
+    if isinstance(d1, np.ndarray) and isinstance(d2, np.ndarray) and d1.shape != () and d2.shape != ():
         return np.concatenate([d1, d2])
-    elif isinstance(d1, set):
+
+    # Sets
+    if isinstance(d1, set) and isinstance(d2, set):
         return d1.union(d2)
-    else:
+
+    # Fallback: try to add
+    try:
         return d1 + d2
+    except Exception:
+        raise Exception(f"Cannot add objects of type {type(d1)} and {type(d2)}")
 
 
 def add_dict_iterable(iterable):
@@ -185,6 +198,74 @@ def add_dict_iterable(iterable):
         else:
             tmp = add_dict(tmp, it)
     return tmp
+"""
+
+def add_dict(d1, d2):
+    """Recursively merge d1 and d2, skipping 'events' everywhere."""
+    # Dicts
+    if isinstance(d1, dict) and isinstance(d2, dict):
+        d = {}
+        for key in set(d1.keys()) | set(d2.keys()):
+            if key == "events":
+                continue  # skip events
+            v1 = d1.get(key)
+            v2 = d2.get(key)
+            if isinstance(v1, dict) and isinstance(v2, dict):
+                d[key] = add_dict(v1, v2)
+            elif v1 is not None and v2 is not None:
+                # Both exist but at least one is not dict: try default merging
+                try:
+                    d[key] = v1 + v2
+                except Exception:
+                    d[key] = v2
+            elif v1 is not None:
+                # Only v1 exists — recursively strip events if dict
+                d[key] = strip_events(v1)
+            else:
+                d[key] = strip_events(v2)
+        return d
+
+    # Awkward arrays
+    if isinstance(d1, ak.highlevel.Array) and isinstance(d2, ak.highlevel.Array):
+        return ak.concatenate([d1, d2])
+
+    # Awkward + numpy
+    if isinstance(d1, ak.highlevel.Array) and isinstance(d2, np.ndarray):
+        return ak.concatenate([d1, ak.from_numpy(d2)])
+    if isinstance(d2, ak.highlevel.Array) and isinstance(d1, np.ndarray):
+        return ak.concatenate([ak.from_numpy(d1), d2])
+
+    # Numpy arrays (skip scalars)
+    if isinstance(d1, np.ndarray) and isinstance(d2, np.ndarray) and d1.shape != () and d2.shape != ():
+        return np.concatenate([d1, d2])
+
+    # Sets
+    if isinstance(d1, set) and isinstance(d2, set):
+        return d1.union(d2)
+
+    # Fallback: try addition
+    try:
+        return d1 + d2
+    except Exception:
+        raise Exception(f"Cannot add objects of type {type(d1)} and {type(d2)}")
+
+def strip_events(d):
+    """Recursively remove 'events' keys from any dict."""
+    if isinstance(d, dict):
+        return {k: strip_events(v) for k, v in d.items() if k != "events"}
+    return d
+
+def add_dict_iterable(iterable):
+    tmp = None
+    for it in iterable:
+        if tmp is None:
+            tmp = it
+        else:
+            tmp = add_dict(tmp, it)
+    return tmp
+
+
+####################
 
 
 def big_process(process, filenames, start, stop, read_form, **kwargs):

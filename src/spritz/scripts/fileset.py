@@ -40,7 +40,7 @@ def list_directories(path):
             if entry.statinfo.flags & client.flags.StatInfoFlags.IS_DIR:
                 dirs.append(name)
         else:
-            # No statinfo returned �~F~R fall back to stat() call
+            # No statinfo returned  fall back to stat() call
             fullpath = path.rstrip("/") + "/" + name
             stat_status, statinfo = fs.stat(fullpath)
             if stat_status.ok and statinfo.flags & client.flags.StatInfoFlags.IS_DIR:
