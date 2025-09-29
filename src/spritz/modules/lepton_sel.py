@@ -9,20 +9,25 @@ def createLepton(events):
     ele_none = ak.mask(events.Electron.pt, ak.is_none(events.Electron.pt, axis=1))
     mu_none = ak.mask(events.Muon.pt, ak.is_none(events.Muon.pt, axis=1))
 
+    print(events.Muon.fields)
     Lepton = ak.zip(
         {
+            "p": ak.concatenate([events.Electron.p, events.Muon.p], axis=1),
             "pt": ak.concatenate([events.Electron.pt, events.Muon.pt], axis=1),
             "eta": ak.concatenate([events.Electron.eta, events.Muon.eta], axis=1),
             "phi": ak.concatenate([events.Electron.phi, events.Muon.phi], axis=1),
             "mass": ak.concatenate([events.Electron.mass, events.Muon.mass], axis=1),
             "pdgId": ak.concatenate([events.Electron.pdgId, events.Muon.pdgId], axis=1),
-            "tightCharge": ak.concatenate([events.Electron.tightCharge, events.Muon.tightCharge], axis=1),
-            "mvaFall17V2Iso_WP80": ak.concatenate([events.Electron.mvaFall17V2Iso_WP80, ak.full_like(events.Muon.pt, -1)], axis=1),
-            "mvaFall17V2Iso_WP90": ak.concatenate([events.Electron.mvaFall17V2Iso_WP90, ak.full_like(events.Muon.pt, -1)], axis=1),
+            #"tightCharge": ak.concatenate([events.Electron.tightCharge, events.Muon.tightCharge], axis=1),
+            #"mvaFall17V2Iso_WP80": ak.concatenate([events.Electron.mvaFall17V2Iso_WP80, ak.full_like(events.Muon.pt, -1)], axis=1),
+            #"mvaFall17V2Iso_WP90": ak.concatenate([events.Electron.mvaFall17V2Iso_WP90, ak.full_like(events.Muon.pt, -1)], axis=1),
             "cutBased": ak.concatenate([events.Electron.cutBased, ak.full_like(events.Muon.pt, -1)], axis=1),
-            "pfRelIso03_all": ak.concatenate([events.Electron.pfRelIso03_all, ak.full_like(events.Muon.pt, -1)], axis=1),
+            "pfRelIso03_all": ak.concatenate([events.Electron.pfRelIso03_all, events.Muon.pfRelIso03_all], axis=1),
             "pfRelIso04_all": ak.concatenate([ak.full_like(events.Electron.pt, -1), events.Muon.pfRelIso04_all], axis=1),
+            "looseId": ak.concatenate([ak.full_like(events.Electron.pt, -1), events.Muon.looseId], axis=1),
+            "tightId": ak.concatenate([ak.full_like(events.Electron.pt, -1), events.Muon.tightId], axis=1),
             "highPtId": ak.concatenate([ak.full_like(events.Electron.pt, -1), events.Muon.highPtId], axis=1),
+            "tkIsoId": ak.concatenate([ak.full_like(events.Electron.pt, -1), events.Muon.tkIsoId], axis=1),
             "electronIdx": ak.values_astype(
                 ak.concatenate(
                     [ak.local_index(events.Electron, axis=1), mu_none], axis=1
@@ -44,7 +49,7 @@ def createLepton(events):
 
 
 def leptonSel(events, cfg):
-    ElectronWP = LeptonSel_cfg.ElectronWP[cfg["era"]]
+    #ElectronWP = LeptonSel_cfg.ElectronWP[cfg["era"]]
     MuonWP = LeptonSel_cfg.MuonWP[cfg["era"]]
 
     ele_mask = abs(events.Lepton.pdgId) == 11
@@ -53,6 +58,7 @@ def leptonSel(events, cfg):
     electron_col = events.Electron[ak.mask(events.Lepton.electronIdx, ele_mask)]
     muon_col = events.Muon[ak.mask(events.Lepton.muonIdx, mu_mask)]
 
+    """
     for wp in ElectronWP["FakeObjWP"]:
         comb = ak.ones_like(electron_col.pt) == 1.0
         for key, cuts in ElectronWP["FakeObjWP"][wp]["cuts"].items():
@@ -63,7 +69,7 @@ def leptonSel(events, cfg):
             comb = comb & (~tmp1 | tmp2)
         comb = ak.values_astype(comb, bool)
         events[("Lepton", "ele_isLoose")] = ak.where(ele_mask, comb, False)
-
+    """
     for wp in MuonWP["FakeObjWP"]:
         comb = ak.ones_like(muon_col.pt) == 1.0
         for key, cuts in MuonWP["FakeObjWP"][wp]["cuts"].items():
@@ -75,11 +81,16 @@ def leptonSel(events, cfg):
         comb = ak.values_astype(comb, bool)
         events[("Lepton", "mu_isLoose")] = ak.where(mu_mask, comb, False)
 
+    # events[("Lepton", "isLoose")] = ak.values_astype(
+    #     events.Lepton.ele_isLoose | events.Lepton.mu_isLoose, bool
+    # )
+    
     events[("Lepton", "isLoose")] = ak.values_astype(
-        events.Lepton.ele_isLoose | events.Lepton.mu_isLoose, bool
+        events.Lepton.mu_isLoose, bool
     )
     events[("Lepton", "isLoose")] = ak.fill_none(events.Lepton.isLoose, False)
 
+    """
     for wp in ElectronWP["TightObjWP"]:
         comb = ak.ones_like(electron_col.pt) == 1.0
         for key, cuts in ElectronWP["TightObjWP"][wp]["cuts"].items():
@@ -90,7 +101,7 @@ def leptonSel(events, cfg):
             comb = comb & (~tmp1 | tmp2)
         comb = ak.values_astype(comb, bool)
         events[("Lepton", "isTightElectron_" + wp)] = ak.where(ele_mask, comb, False)
-
+    """
     for wp in MuonWP["TightObjWP"]:
         comb = ak.ones_like(muon_col.pt) == 1.0
         for key, cuts in MuonWP["TightObjWP"][wp]["cuts"].items():

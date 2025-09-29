@@ -31,7 +31,7 @@ def prompt_gen_match_leptons(events):
                     lep = leptons[ievent][ilep]
                     gen = gen_leptons[ievent][igen]
                     dR = lep.deltaR(gen)
-                    if dR < 0.3 and status[ievent][igen] == 1:
+                    if dR < 0.1 and status[ievent][igen] == 1:
                         if (
                             isPrompt[ievent][igen]
                             or isDirectPromptTauDecayProduct[ievent][igen]

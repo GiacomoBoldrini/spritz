@@ -1,14 +1,32 @@
 {
     "data": {
-        "TrigObj": {
+        "Jet": {
             "branches": [
                 "pt",
                 "eta",
                 "phi",
-                "id",
-                "filterBits"
+                "mass",
+                "jetId",
+                "puIdDisc",
+                "rawFactor",
+                "area",
+                "btagUParTAK4B",
+                "chHEF",
+                "neHEF",
+                "chEmEF",
+                "neEmEF",
+                "muEF",
+                "chMultiplicity",
+                "neMultiplicity"
             ],
             "with_name": "Momentum4D"
+        },
+        "PuppiMET": {
+            "branches": [
+                "pt",
+                "phi"
+            ],
+            "with_name": null
         },
         "Electron": {
             "branches": [
@@ -25,6 +43,16 @@
                 "eInvMinusPInv",
                 "dxy",
                 "dz"
+            ],
+            "with_name": "Momentum4D"
+        },
+        "TrigObj": {
+            "branches": [
+                "pt",
+                "eta",
+                "phi",
+                "id",
+                "filterBits"
             ],
             "with_name": "Momentum4D"
         },
@@ -55,6 +83,10 @@
             ],
             "with_name": null
         },
+        "fixedGridRhoFastjetAll": {
+            "branches": [],
+            "with_name": null
+        },
         "run": {
             "branches": [],
             "with_name": null
@@ -65,6 +97,36 @@
         }
     },
     "mc": {
+        "Jet": {
+            "branches": [
+                "pt",
+                "eta",
+                "phi",
+                "mass",
+                "jetId",
+                "puIdDisc",
+                "genJetIdx",
+                "rawFactor",
+                "area",
+                "hadronFlavour",
+                "btagUParTAK4B",
+                "chHEF",
+                "neHEF",
+                "chEmEF",
+                "neEmEF",
+                "muEF",
+                "chMultiplicity",
+                "neMultiplicity"
+            ],
+            "with_name": "Momentum4D"
+        },
+        "PuppiMET": {
+            "branches": [
+                "pt",
+                "phi"
+            ],
+            "with_name": null
+        },
         "LHEPart": {
             "branches": [
                 "pt",
@@ -73,19 +135,6 @@
                 "mass",
                 "pdgId",
                 "status"
-            ],
-            "with_name": "Momentum4D"
-        },
-        "GenDressedLepton": {
-            "branches": [
-                "pt",
-                "eta",
-                "phi",
-                "mass",
-                "pdgId",
-                "isPrompt",
-                "genPartIdxMother",
-                "statusFlags"
             ],
             "with_name": "Momentum4D"
         },
@@ -102,13 +151,25 @@
             ],
             "with_name": "Momentum4D"
         },
-        "TrigObj": {
+        "GenDressedLepton": {
             "branches": [
                 "pt",
                 "eta",
                 "phi",
-                "id",
-                "filterBits"
+                "mass",
+                "pdgId",
+                "isPrompt",
+                "genPartIdxMother",
+                "statusFlags"
+            ],
+            "with_name": "Momentum4D"
+        },
+        "GenJet": {
+            "branches": [
+                "pt",
+                "eta",
+                "phi",
+                "mass"
             ],
             "with_name": "Momentum4D"
         },
@@ -127,6 +188,16 @@
                 "eInvMinusPInv",
                 "dxy",
                 "dz"
+            ],
+            "with_name": "Momentum4D"
+        },
+        "TrigObj": {
+            "branches": [
+                "pt",
+                "eta",
+                "phi",
+                "id",
+                "filterBits"
             ],
             "with_name": "Momentum4D"
         },

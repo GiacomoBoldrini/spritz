@@ -3,6 +3,15 @@ import numpy as np
 import spritz.framework.variation as variation_module
 from spritz.framework.framework import correctionlib_wrapper
 
+"""
+    NUM_IsoMu24_DEN_CutBasedIdMedium_and_PFIsoMedium
+    NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight
+    NUM_IsoMu24_or_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdGlobalHighPt_and_TkIsoLoose
+    NUM_IsoMu24_or_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdMedium_and_PFIsoMedium
+    NUM_IsoMu24_or_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdTight_and_PFIsoTight
+    NUM_IsoMu24_or_Mu50_or_CascadeMu100_or_HighPtTkMu100_DEN_CutBasedIdTrkHighPt_and_TkIsoLoose
+"""
+
 def none_like(arr): 
     return ak.mask(arr, ak.full_like(arr, False, dtype=bool))
 
@@ -15,20 +24,31 @@ def broadcast_arrays(arr1, arr2): # fix a weird behaviour of ak.broadcast_arrays
 
 def match_trigger_object(events, cfg, dRmax=0.1):
     events[("TrigObj", "mass")] = ak.zeros_like(events.TrigObj.pt)
+    
+    # trigobjs = events.TrigObj[(
+    #     ((events.TrigObj.id==11) & (events.TrigObj.pt>32.) & ((events.TrigObj.filterBits & (1<<1))!=0)) 
+    #     | ((events.TrigObj.id==13) & (events.TrigObj.pt>24.) & ((events.TrigObj.filterBits & (1<<1))!=0) & ((events.TrigObj.filterBits & (1<<3))!=0))
+    # )]
+    
     trigobjs = events.TrigObj[(
-        ((events.TrigObj.id==11) & (events.TrigObj.pt>32.) & ((events.TrigObj.filterBits & (1<<1))!=0)) 
-        | ((events.TrigObj.id==13) & (events.TrigObj.pt>24.) & ((events.TrigObj.filterBits & (1<<1))!=0) & ((events.TrigObj.filterBits & (1<<3))!=0))
+        ((events.TrigObj.id==13) & (events.TrigObj.pt>24.) & ((events.TrigObj.filterBits & (1<<1))!=0) & ((events.TrigObj.filterBits & (1<<3))!=0))
     )]
+    
     trigobj_indices = ak.local_index(trigobjs)
 
     events[("Lepton", "isTrigMatched")] = ak.full_like(events.Lepton.pt, False, dtype=bool)
     events[("Lepton", "dRmatchedTrig")] = none_like(events.Lepton.pt)
     events[("Lepton", "dRnextTrig")] = none_like(events.Lepton.pt)
     
+    # tight_mask = (
+    #     (events.Lepton["isTightElectron_" + cfg["leptonsWP"]["eleWP"]] & (events.Lepton.pt>32.)) 
+    #     | (events.Lepton["isTightMuon_" + cfg["leptonsWP"]["muWP"]]  & (events.Lepton.pt>24.))
+    # )
+    
     tight_mask = (
-        (events.Lepton["isTightElectron_" + cfg["leptonsWP"]["eleWP"]] & (events.Lepton.pt>32.)) 
-        | (events.Lepton["isTightMuon_" + cfg["leptonsWP"]["muWP"]]  & (events.Lepton.pt>24.))
+        (events.Lepton["isTightMuon_" + cfg["leptonsWP"]["muWP"]]  & (events.Lepton.pt>24.))
     )
+     
     leptons = ak.mask(events.Lepton, tight_mask)
     lepton_indices = ak.local_index(leptons)
     
@@ -73,44 +93,48 @@ def match_trigger_object(events, cfg, dRmax=0.1):
 
 
 def trigger_sf(events, variations, ceval_lepton_sf, cfg):
+    
+    events = match_trigger_object(events, cfg)
+    
     minpt_mu = 26.0001
     mineta_mu = -2.3999
     maxeta_mu = 2.3999
 
-    minpt_ele = 32.0001
-    maxpt_ele = 499.9999
-    mineta_ele = -2.4999
-    maxeta_ele = 2.4999
+    # minpt_ele = 32.0001
+    # maxpt_ele = 499.9999
+    # mineta_ele = -2.4999
+    # maxeta_ele = 2.4999
 
     mu_mask = abs(events.Lepton.pdgId) == 13
-    ele_mask = abs(events.Lepton.pdgId) == 11
+    # ele_mask = abs(events.Lepton.pdgId) == 11
 
     pt = ak.copy(events.Lepton.pt)
     eta = ak.copy(events.Lepton.eta)
 
     pt = ak.where(mu_mask & (pt < minpt_mu), minpt_mu, pt)
-    pt = ak.where(ele_mask & (pt < minpt_ele), minpt_ele, pt)
-    pt = ak.where(ele_mask & (pt > maxpt_ele), maxpt_ele, pt)
+    # pt = ak.where(ele_mask & (pt < minpt_ele), minpt_ele, pt)
+    # pt = ak.where(ele_mask & (pt > maxpt_ele), maxpt_ele, pt)
     eta = ak.where(mu_mask & (eta < mineta_mu), mineta_mu, eta)
     eta = ak.where(mu_mask & (eta > maxeta_mu), maxeta_mu, eta)
-    eta = ak.where(ele_mask & (eta < mineta_ele), mineta_ele, eta)
-    eta = ak.where(ele_mask & (eta > maxeta_ele), maxeta_ele, eta)
+    # eta = ak.where(ele_mask & (eta < mineta_ele), mineta_ele, eta)
+    # eta = ak.where(ele_mask & (eta > maxeta_ele), maxeta_ele, eta)
 
     sfs_dict = {
         "mu_trig_sf": {
-            "wrap": correctionlib_wrapper(ceval_lepton_sf["Muon_TriggerSF_tightId"]),
+            "wrap": correctionlib_wrapper(ceval_lepton_sf["NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"]),
             "mask": mu_mask,
             "output": "trig_sf"
         },
-        "ele_trig_sf": {
-            "wrap": correctionlib_wrapper(ceval_lepton_sf["Electron_TriggerSF_Ele32_WP90"]),
-            "mask": ele_mask,
-            "output": "trig_sf"
-        },
+        # "ele_trig_sf": {
+        #     "wrap": correctionlib_wrapper(ceval_lepton_sf["Electron_TriggerSF_Ele32_WP90"]),
+        #     "mask": ele_mask,
+        #     "output": "trig_sf"
+        # },
     }
     lepton_trigger_sf = {'nominal': ak.ones_like(pt)}
 
-    for reco_sf in ["mu_trig_sf","ele_trig_sf"]:
+    # for reco_sf in ["mu_trig_sf","ele_trig_sf"]:
+    for reco_sf in ["mu_trig_sf"]:
         mask = sfs_dict[reco_sf]["mask"]
         _eta = ak.mask(eta, mask)
         _pt = ak.mask(pt, mask)
@@ -135,6 +159,7 @@ def trigger_sf(events, variations, ceval_lepton_sf, cfg):
         matched_lep[:,0].TriggerSF,
         TriggerSFweight_2l
     )
-    events['TriggerSFweight_2l'] = TriggerSFweight_2l
     
+    events['TriggerSFweight_2l'] = TriggerSFweight_2l
+        
     return events, variations

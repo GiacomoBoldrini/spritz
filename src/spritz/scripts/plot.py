@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 d = deepcopy(hep.style.CMS)
 
 d["font.size"] = 12
-d["figure.figsize"] = (10, 5)
+d["figure.figsize"] = (5, 5)
 
 plt.style.use(d)
 
@@ -225,7 +225,7 @@ def plot_ratio(ax, x, edges, numerator, denominator, yrange=None):
     #ax.set_ylim(min(1-ylim, 0.94), max(1+ylim, 1.06))
     ax.set_xlim(np.min(edges), np.max(edges))
 
-    ax.set_ylim(0.91, 1.09)
+    ax.set_ylim(0.81, 1.19)
 
 
 def plot(
