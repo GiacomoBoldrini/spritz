@@ -344,6 +344,13 @@
       "ref": "xsdb"
     },
 
+    "DYto2Mu-MiNNLO-Photos": {
+      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/Zj_MINNLO_Run3_Summer2023NanoAODv12/MiNNLO_Zj-nanoaod23/MiNNLO_Zj-nanoaod23/250928_115055",
+      "xsec": "2005.0",
+      "kfact": "1.000",
+      "ref": "FEWZ"
+    },
+
     "TTJets":{
       "nanoAOD" : "/TTto4Q_TuneCP5_13p6TeV_powheg-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v14-v2/NANOAODSIM",
       "xsec": "410.5",

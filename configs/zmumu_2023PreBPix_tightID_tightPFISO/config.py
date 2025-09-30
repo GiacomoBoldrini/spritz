@@ -17,7 +17,7 @@ year = "Full2023PreBPix_v12"
 lumi = lumis[year]["C"] / 1000
 plot_label = "DY"
 year_label = "2023 Pre-BPix"
-njobs = 50
+njobs = 1000
 
 runner = f"{fw_path}/src/spritz/runners/runner_3DY_trees_singleTriggers.py"
 
@@ -83,75 +83,80 @@ datasets = {
         "task_weight": 8,
         "max_weight": 1e9,
     },
-    "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX": {
-        "files": "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX",
+    # "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX": {
+    #     "files": "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX",
+    #     "task_weight": 8,
+    #     "max_weight": 1e9,
+    # },
+	# "DYto2L-2Jets_MLL-50_1J_amcatnloFXFX": {
+    #     "files": "DYto2L-2Jets_MLL-50_1J_amcatnloFXFX",
+    #     "task_weight": 8,
+    #     "max_weight": 1e9,
+    # },
+	# "DYto2L-2Jets_MLL-50_2J_amcatnloFXFX": {
+    #     "files": "DYto2L-2Jets_MLL-50_2J_amcatnloFXFX",
+    #     "task_weight": 8,
+    #     "max_weight": 1e9,
+    # },
+    "DYto2Mu-MiNNLO-Photos": {
+        "files": "DYto2Mu-MiNNLO-Photos",
         "task_weight": 8,
         "max_weight": 1e9,
     },
-	"DYto2L-2Jets_MLL-50_1J_amcatnloFXFX": {
-        "files": "DYto2L-2Jets_MLL-50_1J_amcatnloFXFX",
+    "DYto2E_MLL-50to120": {
+        "files": "DYto2E_MLL-50to120",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 1000
     },
-	"DYto2L-2Jets_MLL-50_2J_amcatnloFXFX": {
-        "files": "DYto2L-2Jets_MLL-50_2J_amcatnloFXFX",
+    "DYto2E_MLL-120to200": {
+        "files": "DYto2E_MLL-120to200",
         "task_weight": 8,
         "max_weight": 1e9,
+        "max_chunks": 1000
     },
-    # "DYto2E_MLL-50to120": {
-    #     "files": "DYto2E_MLL-50to120",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-120to200": {
-    #     "files": "DYto2E_MLL-120to200",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-200to400": {
-    #     "files": "DYto2E_MLL-200to400",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-400to800": {
-    #     "files": "DYto2E_MLL-400to800",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-800to1500": {
-    #     "files": "DYto2E_MLL-800to1500",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-1500to2500": {
-    #     "files": "DYto2E_MLL-1500to2500",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-2500to4000": {
-    #     "files": "DYto2E_MLL-2500to4000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-4000to6000": {
-    #     "files": "DYto2E_MLL-4000to6000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2E_MLL-6000": {
-    #     "files": "DYto2E_MLL-6000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
+    "DYto2E_MLL-200to400": {
+        "files": "DYto2E_MLL-200to400",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-400to800": {
+        "files": "DYto2E_MLL-400to800",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-800to1500": {
+        "files": "DYto2E_MLL-800to1500",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-1500to2500": {
+        "files": "DYto2E_MLL-1500to2500",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-2500to4000": {
+        "files": "DYto2E_MLL-2500to4000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-4000to6000": {
+        "files": "DYto2E_MLL-4000to6000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2E_MLL-6000": {
+        "files": "DYto2E_MLL-6000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
     # "DYto2Mu_MLL-50to120": {
     #     "files": "DYto2Mu_MLL-50to120",
     #     "task_weight": 8,
@@ -206,60 +211,60 @@ datasets = {
     #     "max_weight": 1e9,
     #     "max_chunks": 1000
     # },
-    # "DYto2Tau_MLL-50to120": {
-    #     "files": "DYto2Tau_MLL-50to120",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-120to200": {
-    #     "files": "DYto2Tau_MLL-120to200",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-200to400": {
-    #     "files": "DYto2Tau_MLL-200to400",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-400to800": {
-    #     "files": "DYto2Tau_MLL-400to800",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-800to1500": {
-    #     "files": "DYto2Tau_MLL-800to1500",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-1500to2500": {
-    #     "files": "DYto2Tau_MLL-1500to2500",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-2500to4000": {
-    #     "files": "DYto2Tau_MLL-2500to4000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-4000to6000": {
-    #     "files": "DYto2Tau_MLL-4000to6000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },
-    # "DYto2Tau_MLL-6000": {
-    #     "files": "DYto2Tau_MLL-6000",
-    #     "task_weight": 8,
-    #     "max_weight": 1e9,
-    #     "max_chunks": 1000
-    # },  
+    "DYto2Tau_MLL-50to120": {
+        "files": "DYto2Tau_MLL-50to120",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-120to200": {
+        "files": "DYto2Tau_MLL-120to200",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-200to400": {
+        "files": "DYto2Tau_MLL-200to400",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-400to800": {
+        "files": "DYto2Tau_MLL-400to800",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-800to1500": {
+        "files": "DYto2Tau_MLL-800to1500",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-1500to2500": {
+        "files": "DYto2Tau_MLL-1500to2500",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-2500to4000": {
+        "files": "DYto2Tau_MLL-2500to4000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-4000to6000": {
+        "files": "DYto2Tau_MLL-4000to6000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },
+    "DYto2Tau_MLL-6000": {
+        "files": "DYto2Tau_MLL-6000",
+        "task_weight": 8,
+        "max_weight": 1e9,
+        "max_chunks": 1000
+    },  
     # "TTJets": {
     #     "files": "TTJets",
     #     "task_weight": 8,
@@ -353,22 +358,22 @@ samples = {
             "ZZ"
        ]
     },
-    # "DYtt": {
-    #    "samples": [
-    #        "DYto2Tau_MLL-50to120",
-    #        "DYto2Tau_MLL-120to200",
-    #        "DYto2Tau_MLL-200to400",
-    #        "DYto2Tau_MLL-400to800",
-    #        "DYto2Tau_MLL-800to1500",
-    #        "DYto2Tau_MLL-1500to2500",
-    #        "DYto2Tau_MLL-2500to4000",
-    #        "DYto2Tau_MLL-4000to6000",
-    #        "DYto2Tau_MLL-6000"
-    #    ]
-    # },
-    # "DYmumu-50-120": {
-    #     "samples": ["DYto2Mu_MLL-50to120"]
-    # },
+    "DYtt": {
+       "samples": [
+           "DYto2Tau_MLL-50to120",
+           "DYto2Tau_MLL-120to200",
+           "DYto2Tau_MLL-200to400",
+           "DYto2Tau_MLL-400to800",
+           "DYto2Tau_MLL-800to1500",
+           "DYto2Tau_MLL-1500to2500",
+           "DYto2Tau_MLL-2500to4000",
+           "DYto2Tau_MLL-4000to6000",
+           "DYto2Tau_MLL-6000"
+       ]
+    },
+    "DY2Mu-MiNNLO": {
+        "samples": ["DYto2Mu-MiNNLO-Photos"]
+    },
     # "DYmumu-120-200": {
     #     "samples": ["DYto2Mu_MLL-120to200"]
     # },
@@ -403,21 +408,34 @@ samples = {
     #        "DYto2Mu_MLL-6000"
     #    ]
     # }
-    "DY0J": {
+    "DYee": {
         "samples": [
-                "DYto2L-0Jets_MLL-50_0J_amcatnloFXFX",
-            ]
+           "DYto2E_MLL-50to120",
+           "DYto2E_MLL-120to200",
+           "DYto2E_MLL-200to400",
+           "DYto2E_MLL-400to800",
+           "DYto2E_MLL-800to1500",
+           "DYto2E_MLL-1500to2500",
+           "DYto2E_MLL-2500to4000",
+           "DYto2E_MLL-4000to6000",
+           "DYto2E_MLL-6000"
+        ]
     },
-	"DY1J": {
-        "samples": [
-                "DYto2L-1Jets_MLL-50_0J_amcatnloFXFX",
-            ]
-    },
-	"DY2J": {
-        "samples": [
-                "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX",
-            ]
-    },
+    # "DY0J": {
+    #     "samples": [
+    #             "DYto2L-0Jets_MLL-50_0J_amcatnloFXFX",
+    #         ]
+    # },
+	# "DY1J": {
+    #     "samples": [
+    #             "DYto2L-1Jets_MLL-50_0J_amcatnloFXFX",
+    #         ]
+    # },
+	# "DY2J": {
+    #     "samples": [
+    #             "DYto2L-2Jets_MLL-50_0J_amcatnloFXFX",
+    #         ]
+    # },
 }
 
 # samples = {
@@ -431,9 +449,8 @@ colors["ST"] = cmap_pastel[2]
 colors["TT"] = cmap_pastel[3]
 colors["VV"] = cmap_pastel[4]
 colors["DYtt"] = cmap_pastel[5]
-colors["DY0J"] = cmap_pastel[0]
-colors["DY1J"] = cmap_pastel[1]
-colors["DY2J"] = cmap_pastel[6]
+colors["DY2Mu-MiNNLO"] = cmap_pastel[1]
+colors["DYee"] = cmap_pastel[6]
 
 for i in datasets.keys():
     found=False
