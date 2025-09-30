@@ -530,7 +530,7 @@ def process(events, **kwargs):
                     * events.prefireWeight
                     * events.TriggerSFweight_2l
                     # * events.EMTFbug_veto
-                    * events["LHEReweightingWeight"][:, 0] # SM
+                    # * events["LHEReweightingWeight"][:, 0] # SM
                 )
                 
         # buld Gen level variables
@@ -681,28 +681,29 @@ def process(events, **kwargs):
                         if ("save_events" in variables[variable].keys()) and (variables[variable]["save_events"]): 
                             results[dataset_name]["events"][region][variable] = events[variable][mask]
                             if "weight" not in results[dataset_name]["events"][region].keys(): results[dataset_name]["events"][region]["weight"] = events["weight"][mask]
-                            
-                        if isinstance(variables[variable]["axis"], list):
-                            var_names = [k.name for k in variables[variable]["axis"]]
-                            vals = {
-                                var_name: events[var_name][mask] for var_name in var_names
-                            }
-                            results[dataset_name]["histos"][variable].fill(
-                                **vals,
-                                category=region,
-                                syst=variation,
-                                check_weights=cwgt,
-                                weight=events[cwgt][mask],
-                            )
-                        else:
-                            var_name = variables[variable]["axis"].name
-                            results[dataset_name]["histos"][variable].fill(
-                                events[var_name][mask],
-                                category=region,
-                                syst=variation,
-                                check_weights=cwgt,
-                                weight=events[cwgt][mask],
-                            )
+                        
+                        if "axis" in variables[variable].keys():
+                            if isinstance(variables[variable]["axis"], list):
+                                var_names = [k.name for k in variables[variable]["axis"]]
+                                vals = {
+                                    var_name: events[var_name][mask] for var_name in var_names
+                                }
+                                results[dataset_name]["histos"][variable].fill(
+                                    **vals,
+                                    category=region,
+                                    syst=variation,
+                                    check_weights=cwgt,
+                                    weight=events[cwgt][mask],
+                                )
+                            else:
+                                var_name = variables[variable]["axis"].name
+                                results[dataset_name]["histos"][variable].fill(
+                                    events[var_name][mask],
+                                    category=region,
+                                    syst=variation,
+                                    check_weights=cwgt,
+                                    weight=events[cwgt][mask],
+                                )
                         
                     """
                     # for category in categories:
