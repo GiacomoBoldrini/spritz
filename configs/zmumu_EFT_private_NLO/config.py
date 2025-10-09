@@ -461,36 +461,38 @@ samples = {
     "DYll": {
        "samples": [
            "DYmm_M-50",
-           # "DYJetsToMuMu_M-100to200",
-           # "DYJetsToMuMu_M-200to400",
-           # "DYJetsToMuMu_M-400to500",
-           # "DYJetsToMuMu_M-500to700",
-           # "DYJetsToMuMu_M-700to800",
-           # "DYJetsToMuMu_M-800to1000",
-           # "DYJetsToMuMu_M-1000to1500",
-           # "DYJetsToMuMu_M-1500to2000",
-           # "DYJetsToMuMu_M-2000toInf",
+           "DYJetsToMuMu_M-100to200",
+           "DYJetsToMuMu_M-200to400",
+           "DYJetsToMuMu_M-400to500",
+           "DYJetsToMuMu_M-500to700",
+           "DYJetsToMuMu_M-700to800",
+           "DYJetsToMuMu_M-800to1000",
+           "DYJetsToMuMu_M-1000to1500",
+           "DYJetsToMuMu_M-1500to2000",
+           "DYJetsToMuMu_M-2000toInf",
            "DYee_M-50",
-           # "DYJetsToEE_M-100to20",
-           # "DYJetsToEE_M-200to400",
-           # "DYJetsToEE_M-400to500",
-           # "DYJetsToEE_M-500to700",
-           # "DYJetsToEE_M-700to800",
-           # "DYJetsToEE_M-800to1000",
-           # "DYJetsToEE_M-1000to1500",
-           # "DYJetsToEE_M-1500to2000",
-           # "DYJetsToEE_M-2000toInf",
+           "DYJetsToEE_M-100to20",
+           "DYJetsToEE_M-200to400",
+           "DYJetsToEE_M-400to500",
+           "DYJetsToEE_M-500to700",
+           "DYJetsToEE_M-700to800",
+           "DYJetsToEE_M-800to1000",
+           "DYJetsToEE_M-1000to1500",
+           "DYJetsToEE_M-1500to2000",
+           "DYJetsToEE_M-2000toInf",
+       ]
+    },
+     "DYEFT": {
+       "samples": [
+           "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos",
+              "DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos",
        ],
-       # "samples": [
-       #     "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos",
-       #        "DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos",
-       # ],
        "is_signal": True
     },
 }
@@ -503,7 +505,7 @@ colors["TT"] = cmap_pastel[3]
 colors["VV"] = cmap_pastel[4]
 colors["DYtt"] = cmap_pastel[5]
 colors["DYll"] = cmap_pastel[6]
-
+colors["DYEFT"] = cmap_pastel[7]
 
 # for i in datasets.keys():
 #     found=False
@@ -697,6 +699,10 @@ regions = {
     },
 }
 
+gen_mll_bins = [50, 100, 200, 400, 600, 800, 1000, 1500, 15000]
+costheta_bins = [-1, -0.6, -0.2, 0.2, 0.6, 1]
+yZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
+
 def cos_theta_star(l1, l2):
     get_sign = lambda nr: nr/abs(nr)
     return 2*get_sign((l1+l2).pz)/(l1+l2).mass * get_sign(l1.pdgId)*(l2.pz*l1.energy-l1.pz*l2.energy)/np.sqrt(((l1+l2).mass)**2+((l1+l2).pt)**2)
@@ -781,6 +787,30 @@ variables = {
         "func": lambda events: events.Lepton[:, 1].eta,
         "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal2")
     },
+    "etall_abs": {
+    "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).eta),
+    "axis": hist.axis.Regular(45, 0, 9, name="etall_abs"),
+    },
+    "mll_eta": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Regular(20, 50, 100, name="mll"), hist.axis.Regular(5, -2.5, 2.5, name="etal1")]
+    },
+    "mll_eta_bins": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Regular(5, -2.5, 2.5, name="etal1")]
+    },
+    "triple_diff": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Regular(20, 50, 100, name="mll"), hist.axis.Regular(4, -2.5, 2.5, name="etal1"), hist.axis.Regular(4, 0, 150, name="ptll")]
+    },
+    "triple_diff_mll_bins": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Regular(4, -2.5, 2.5, name="etal1"), hist.axis.Regular(4, 0, 150, name="ptll")]
+    },
+    "triple_diff_theory": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(yZ_bins, name="yZ_bins")]
+    }
 }
 
 nuisances = {

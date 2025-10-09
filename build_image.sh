@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+# set -euo pipefail
 
 # ---------------------------
 # User-configurable variables
@@ -28,7 +28,7 @@ docker build --progress=plain --no-cache -t "${IMAGE_NAME}" .
 
 echo "==> Building Singularity image: ${SIF_PATH}"
 # Stream Docker image directly into Singularity (no intermediate tar)
-rm "${TAR_PATH}"
+rm -f "${TAR_PATH}"
 docker save "${IMAGE_NAME}:latest" -o "${TAR_PATH}" 
 rm "${SIF_PATH}"
 singularity build "${SIF_PATH}" docker-archive://"${TAR_PATH}"

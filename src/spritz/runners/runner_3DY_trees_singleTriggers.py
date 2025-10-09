@@ -29,7 +29,7 @@ from spritz.modules.basic_selections import (
 from spritz.modules.btag_sf import btag_sf
 from spritz.modules.dnn_evaluator import dnn_evaluator, dnn_transform
 from spritz.modules.gen_analysis import gen_analysis
-from spritz.modules.jet_sel import cleanJet, jetSel
+from spritz.modules.jet_sel import  jetSel
 from spritz.modules.jme import (
     correct_jets_data,
     correct_jets_mc,
