@@ -18,6 +18,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-f', '--filenames',   dest='filenames',     help='list of file paths to be postprocessed',
                         required=False, type=str, nargs="+", default=None)
+parser.add_argument('-d', '--directory',   dest='directory',     help='dir path to be postprocessed',
+                        required=False, type=str, default=None)
 parser.add_argument('-o', '--output',   dest='output',
                         help='The file name for the output merged file. By default results_merged_new.pkl', required=False, default="results_merged_new.pkl", type=str)
 
@@ -156,6 +158,12 @@ def main():
     else:
         inputs = [i for i in args.filenames if i.endswith('.pkl')]
 
+    if args.directory == None: pass 
+    else:
+        print(f"---> Retrieving files from {args.directory}/job_*/chunks_job.pkl")
+        inputs = glob.glob(f"{args.directory}/job_*/chunks_job.pkl")[:]
+
+    print(inputs)
     output = f"{basepath}/{args.output}"
     print(f"Merging and writing to {output}")
     reduce_function = sum
