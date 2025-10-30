@@ -1,0 +1,1 @@
+python eft_distribution_dump_wMatrix.py --input-dir ../condor -o cao -j 100 --lhe-json DY100_200.json -rew sm,cqlm2,cql32,cqe2,cll1221,cpdc,cpwb,cpl2,c3pl1,c3pl2,cpmu,cpqmi,cpq3i,cpq3,cpqm,cpu,cpd --save-matrix

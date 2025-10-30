@@ -26,6 +26,7 @@ def make_datacard(
     variable,
     nuisances,
     samples,
+    cwgt
 ):
     output_path = f"datacards/{region}/{variable}"
 
@@ -48,7 +49,8 @@ def make_datacard(
     enable_stat = False
     extra_lines = []
     for sample_name in samples:
-        final_name = f"{region}/{variable}/histo_{sample_name}"
+        reg_var = f"{region}/{variable}"
+        final_name = f"{reg_var}/{cwgt}/histo_{sample_name}"
         h = input_file[final_name].to_hist().copy()
         name = samples[sample_name].get("name", sample_name)
         is_signal = samples[sample_name].get("is_signal", False)
@@ -126,6 +128,24 @@ def make_datacard(
         histo_view.value = np.zeros_like(histo_view.value)
         histo_view.variance = np.zeros_like(histo_view.variance)
         output_file["histo_Data"] = h_data
+        
+    # check if there is a correlation histo for this region, if so copy and paste it
+    # corr histo does not depend on samples but just on the region
+    keys = input_file[f"{reg_var}/{cwgt}"].keys()
+    corr_keys = []
+    for k in keys:
+        # Convert bytes to str if necessary
+        if isinstance(k, bytes):
+            k = k.decode("utf-8")
+        if k.startswith("histo_correlation"):
+            corr_keys.append(k)
+            
+    if corr_keys:
+        for c__ in corr_keys:
+            h = input_file[f"{reg_var}/{cwgt}/{c__}"]
+            output_file[f"histo_correlation"] = h
+            
+    
     datacard = get_datacard_header(bin_name, np.sum(h_data.values(True)))
     for row in rows:
         datacard += "\t".join(row) + "\n"
@@ -135,6 +155,9 @@ def make_datacard(
         datacard += nuisances[syst]["name"] + "\t" + "\t".join(systs[syst]) + "\n"
     if enable_stat:
         extra_lines.append(f"{bin_name} autoMCStats 10 0 1")
+        if corr_keys:
+            extra_lines.append(f"{bin_name} autoMCCorr shapes.root histo_correlation")
+            
     for line in extra_lines:
         datacard += line + "\n"
 
@@ -153,26 +176,25 @@ def main():
     nuisances = analysis_dict["nuisances"]
     regions = analysis_dict["regions"]
     variables = analysis_dict["variables"]
+    check_weights = list(analysis_dict["check_weights"].keys())+["nominal"]
     fin = uproot.open("histos.root")
-    good_regions = [
-        f"{region}_{cat}"
-        for region in ["sr_inc", "dypu_cr", "top_cr"]
-        for cat in ["ee", "mm"]
-    ]
-    # good_variables = ["mjj", "dnn", "phil1"]
-    # good_variables = ["detajj_fits", "dnn_fits", "MET_fits"]
-    good_variables = ["detajj_fits", "dnn_ptll", "MET_fits"]
+
+    good_variables = variables
+    good_regions = regions
+    
     for region in good_regions:
-        for variable in good_variables:
-            if "axis" not in variables[variable]:
-                continue
-            make_datacard(
-                fin,
-                region,
-                variable,
-                nuisances,
-                samples,
-            )
+        for cwgt in check_weights:
+            for variable in good_variables:
+                if "axis" not in variables[variable]:
+                    continue
+                make_datacard(
+                    fin,
+                    region,
+                    variable,
+                    nuisances,
+                    samples,
+                    cwgt
+                )
 
 
 if __name__ == "__main__":

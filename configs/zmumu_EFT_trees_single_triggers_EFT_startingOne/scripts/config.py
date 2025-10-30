@@ -27,38 +27,34 @@ special_analysis_cfg = {
 
 
 datasets = {
-    "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos",
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne": {
+        "files": "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne",
         "task_weight": 8,
     },
-    "DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos": {
-        "files": "DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos",
-        "task_weight": 8,
-    }
 }
 
 
@@ -72,30 +68,27 @@ samples = {}
 colors = {}
 
 samples = {
-    "DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll50_100_Photos"]
+	"DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll100_200_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll200_400_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll400_600_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll600_800_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll800_1000_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos"]
+    "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne" : {
+        "samples": ["DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne"]
     },
-	"DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos" : {
-        "samples": ["DY_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos"]
-    }
 }
 
 colors = {}
@@ -130,10 +123,10 @@ regions = {
         "func": lambda events: preselections(events) & events["mm"],
         "mask": 0
     },
-    "inc_em": {
-        "func": lambda events: preselections(events) & events["em"],
-        "mask": 0
-    }
+    # "inc_em": {
+    #     "func": lambda events: preselections(events) & events["em"],
+    #     "mask": 0
+    # }
 }
 
 gen_mll_bins = [50, 100, 200, 400, 600, 800, 1000, 1500, 15000]
@@ -160,10 +153,6 @@ variables = {
             "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
             "axis": hist.axis.Variable(yZ_bins, name="yZ_bins"),
             "save_events": True
-    },
-    "Gen_mll":{
-        "func": lambda events: events.Gen_mll,
-        "save_events": True
     },
     "sm": {
     	"func": lambda events: events.LHEReweightingWeight[:, 0],
