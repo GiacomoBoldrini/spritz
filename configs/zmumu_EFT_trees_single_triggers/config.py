@@ -17,7 +17,7 @@ lumi = lumis[year]["tot"] / 1000  # All of 2018
 #lumi = lumis[year]["B"] / 1000
 plot_label = "DY"
 year_label = "2018"
-njobs = 100
+njobs = 2000
 
 runner = f"{fw_path}/src/spritz/runners/runner_3DY_trees_singleTriggers.py"
 
@@ -536,8 +536,11 @@ regions = {
 }
 
 gen_mll_bins = [50, 100, 200, 400, 600, 800, 1000, 1500, 15000]
+mll_medium_bins = [50,58,64,72,78,84,90,96,102,108,116,124,132,140,
+            148,156,164,172,180,190,200,210,220,230,240,255,270,285,300,325,350,375,
+            400,450,500]
 costheta_bins = [-1, -0.6, -0.2, 0.2, 0.6, 1]
-yZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
+etaZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
 
 def cos_theta_star(l1, l2):
     get_sign = lambda nr: nr/abs(nr)
@@ -549,73 +552,129 @@ variables = {
         "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
         "axis": hist.axis.Regular(60, 50, 200, name="mll")
     },
-    # "costhetastar_bins": {
-    #         "func": lambda events: cos_theta_star(events.Lepton[:, 0], events.Lepton[:, 1]),
-    #         "axis": hist.axis.Variable(costheta_bins, name="costhetastar_bins")
-    # },
-    # "yZ_bins": {
-    #         "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
-    #         "axis": hist.axis.Variable(yZ_bins, name="yZ_bins"),
-    # },
+    "mll_medium": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Variable(mll_medium_bins, name="mll_medium")
+    },
+    "mll_bins": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Variable(gen_mll_bins, name="mll_bins")
+    },
+    "mll_high": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).mass,
+        "axis": hist.axis.Variable([50,80,110,130,150,175,200,225,250,275,300,325,350,
+            400,450,500,600,800,1000,2000], name="mll_high")
+    },
     "ptll": {
         "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).pt,
         "axis": hist.axis.Regular(60, 0, 600, name="ptll"),
     },
-    # "etall": {
-    #     "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
-    #     "axis": hist.axis.Regular(80, -8, 8, name="etall"),
-    # },
-    # "rapll": {
-    #     "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).rapidity,
-    #     "axis": hist.axis.Regular(50, -2.5, 2.5, name="rapll"),
-    # },
-    # "detall": {
-    #     "func": lambda events: abs(events.Lepton[:, 0].deltaeta(events.Lepton[:, 1])),
-    #     "axis": hist.axis.Regular(50, 0, 5, name="detall")
-    # },
-    # "dphill": {
-    #     "func": lambda events: abs(events.Lepton[:, 0].deltaphi(events.Lepton[:, 1])),
-    #     "axis": hist.axis.Regular(63, 0, 3.15, name="dphill")
-    # },
-    # "dRll": {
-    #     "func": lambda events: events.Lepton[:, 0].deltaR(events.Lepton[:, 1]),
-    #     "axis": hist.axis.Regular(60, 0, 6, name="dRll")
-    # },
-    # "ptl1": {
-    #     "func": lambda events: events.Lepton[:, 0].pt,
-    #     "axis": hist.axis.Regular(60, 20, 320, name="ptl1")
-    # },
-    # "ptl2": {
-    #     "func": lambda events: events.Lepton[:, 1].pt,
-    #     "axis": hist.axis.Regular(60, 10, 160, name="ptl2")
-    # },
-    # "etal1": {
-    #     "func": lambda events: events.Lepton[:, 0].eta,
-    #     "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal1")
-    # },
-    # "etal2": {
-    #     "func": lambda events: events.Lepton[:, 1].eta,
-    #     "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal2")
-    # },
-    # "etal2": {
-    #     "func": lambda events: events.Lepton[:, 1].eta,
-    #     "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal2")
-    # },
-    "GenPtLL": {
-        "func": lambda events: events.Gen_ptll, 
-        "axis": hist.axis.Regular(50, 0, 500, name="GenPtLL")
+    "etall": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
+        "axis": hist.axis.Regular(80, -8, 8, name="etall"),
     },
+    "etall_abs": {
+        "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).eta),
+        "axis": hist.axis.Regular(45, 0, 9, name="etall_abs"),
+    },
+    "rapll": {
+        "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).rapidity,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="rapll"),
+    },
+    "rapll_abs": {
+        "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).rapidity),
+        "axis": hist.axis.Regular(60, 0, 3, name="rapll_abs"),
+    },
+    "detall": {
+        "func": lambda events: abs(events.Lepton[:, 0].deltaeta(events.Lepton[:, 1])),
+        "axis": hist.axis.Regular(50, 0, 5, name="detall")
+    },
+    "dphill": {
+        "func": lambda events: abs(events.Lepton[:, 0].deltaphi(events.Lepton[:, 1])),
+        "axis": hist.axis.Regular(63, 0, 3.15, name="dphill")
+    },
+    "dRll": {
+        "func": lambda events: events.Lepton[:, 0].deltaR(events.Lepton[:, 1]),
+        "axis": hist.axis.Regular(60, 0, 6, name="dRll")
+    },
+    "costhetastar": {
+        "func": lambda events: cos_theta_star(events.Lepton[:, 0], events.Lepton[:, 1]),
+        "axis": hist.axis.Regular(50, -1, 1, name="costhetastar")
+    },
+    "costhetastar_bins": {
+        "func": lambda events: cos_theta_star(events.Lepton[:, 0], events.Lepton[:, 1]),
+        "axis": hist.axis.Variable(costheta_bins, name="costhetastar_bins")
+    },
+    "etaZ_bins": {
+            "func": lambda events: (events.Lepton[:, 0] + events.Lepton[:, 1]).eta,
+            "axis": hist.axis.Variable(etaZ_bins, name="etaZ_bins"),
+    },
+    "ptl1": {
+        "func": lambda events: events.Lepton[:, 0].pt,
+        "axis": hist.axis.Regular(60, 20, 320, name="ptl1")
+    },
+    "ptl1_high": {
+        "func": lambda events: events.Lepton[:, 0].pt,
+        "axis": hist.axis.Variable([20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,
+            190,200,210,220,230,240,250,260,270,280,290,300,310,320,330,340,350,360,370,380,390,
+            400,415,430,445,460,480,500,525,550,575,600,650,700,800], name="ptl1_high")
+    },
+    "ptl2": {
+        "func": lambda events: events.Lepton[:, 1].pt,
+        "axis": hist.axis.Regular(60, 10, 160, name="ptl2")
+    },
+    "ptl2_high": {
+        "func": lambda events: events.Lepton[:, 1].pt,
+        "axis": hist.axis.Variable([10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,
+            180,190,200,215,230,250,290,350,450], name="ptl2_high")
+    },
+    "etal1": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal1")
+    },
+    "etal2": {
+        "func": lambda events: events.Lepton[:, 1].eta,
+        "axis": hist.axis.Regular(50, -2.5, 2.5, name="etal2")
+    },
+    "etall_abs": {
+        "func": lambda events: abs((events.Lepton[:, 0] + events.Lepton[:, 1]).eta),
+        "axis": hist.axis.Regular(45, 0, 9, name="etall_abs"),
+    },
+    "mll_eta": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Regular(20, 50, 100, name="mll"), hist.axis.Regular(5, -2.5, 2.5, name="etal1")]
+    },
+    "mll_eta_bins": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Regular(5, -2.5, 2.5, name="etal1")]
+    },
+    "triple_diff": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Regular(20, 50, 100, name="mll"), hist.axis.Regular(4, -2.5, 2.5, name="etal1"), hist.axis.Regular(4, 0, 150, name="ptll")]
+    },
+    "triple_diff_mll_bins": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Regular(4, -2.5, 2.5, name="etal1"), hist.axis.Regular(4, 0, 150, name="ptll")]
+    },
+    "triple_diff_medium": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(mll_medium_bins, name="mll_medium"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="etaZ_bins")]
+    },
+    "triple_diff_theory": {
+        "func": lambda events: events.Lepton[:, 0].eta,
+        "axis": [hist.axis.Variable(gen_mll_bins, name="mll_bins"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="etaZ_bins")]
+    }
 }
 
 nuisances = {}
 
-# nuisances = {
-#     "lumi": {
-#         "name": "lumi",
-#         "type": "lnN",
-#         "samples": dict((skey, "1.02") for skey in samples),
-#     },
-# }
+nuisances = {
+    "lumi": {
+        "name": "lumi",
+        "type": "lnN",
+        "samples": dict((skey, "1.02") for skey in samples),
+    },
+}
 
 ## Use the following if you want to apply the automatic combine MC stat nuisances.
 nuisances["stat"] = {

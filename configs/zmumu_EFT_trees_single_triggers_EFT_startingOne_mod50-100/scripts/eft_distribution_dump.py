@@ -18,7 +18,6 @@ from tqdm import tqdm
 import mplhep as hep
 plt.style.use(hep.style.CMS)
 from config import datasets, regions, lumi, samples
-import time
 
 # -----------------------------
 # Arguments
@@ -31,7 +30,6 @@ def get_args():
     parser.add_argument("--input-dir", type=str, required=True, help="Folder with input pickle files")
     parser.add_argument("--lhe-json", type=str, required=True, help="JSON with LHE reweighting weights")
     parser.add_argument("--max-files", dest="max_files", type=int, required=False, help="maximum files to process, by default all", default=-1)
-    parser.add_argument("--save-matrix", dest="save_matrix", required=False, help="Save matrix for correlated stat MC", default=False, action="store_true")
     parser.add_argument("--lumi", dest="luminosity", type=float, required=False, help="Luminosity to normalize, default None", default=None)
     return parser.parse_args()
 
@@ -180,7 +178,7 @@ from itertools import combinations
 import numpy as np
 import hist
 
-def process_file(file_path, regions, samples_to_process, variables, reweight_map, save_matrix):
+def process_file(file_path, regions, samples_to_process, variables, reweight_map):
     print(file_path)
     job_results = read_inputs([file_path])
 
@@ -220,61 +218,11 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
         }
         for region in regions
     }
-    
-    # local_histos = {region: {} for region in regions}
-    
-    if save_matrix:
-        for region in regions:
-            for shape in (
-                ["sm_variance"] +
-                [f"{op}_plus_variance" for op in non_sm_ops] +
-                [f"{op}_minus_variance" for op in non_sm_ops] +
-                [f"sm_{op}_mixed_variance" for op in non_sm_ops] +
-                [f"sm_{op}_m1_mixed_variance" for op in non_sm_ops] +
-                [f"{op}_{op}_m1_mixed_variance" for op in non_sm_ops] 
-            ):
-                local_histos[region][shape] = {}
-                for var, cfg in variables.items():
-                    local_histos[region][shape][var] = {}
-                    for sample in samples_to_process:
-                        local_histos[region][shape][var][sample] = {"histo": build_hist(cfg), "sumw": 0.0}
-            
-            shapes__ =  []
-            for op1, op2 in op_pairs:
-                shapes__ += [f"{op1}_{op2}_variance", f"sm_{op1}_{op2}_mixed_variance", f"{op1}_{op2}_mixed_variance", f"{op1}_{op2}_m1_mixed_variance", f"{op1}_{op1}_{op2}_mixed_variance", f"{op2}_{op1}_m1_mixed_variance", f"{op2}_{op1}_{op2}_mixed_variance", f"{op1}_m1_{op2}_m1_mixed_variance", f"{op1}_m1_{op1}_{op2}_mixed_variance", f"{op2}_m1_{op1}_{op2}_mixed_variance"]
-                
-                # single mixed 
-                
-                for op3 in non_sm_ops:
-                    if op3 != op1 and op3 != op2:
-                        shapes__ += [f"{op3}_{op1}_{op2}_mixed_variance", f"{op3}_m1_{op1}_{op2}_mixed_variance"]
-                                
-                # mixed mixed 
-                for op3, op4 in op_pairs:
-                    if (op3, op4) == (op1, op2):
-                        continue
-                    
-                    sn = f"{op1}_{op2}_{op3}_{op4}_mixed_variance"
-                    sn_alt = f"{op3}_{op4}_{op1}_{op2}_mixed_variance"
-
-                    if sn in shapes__ or sn_alt in shapes__:
-                        continue
-                        
-                    shapes__.append(f"{op1}_{op2}_{op3}_{op4}_mixed_variance")
-                    
-            for shape in shapes__:
-                local_histos[region][shape] = {}
-                for var, cfg in variables.items():
-                    local_histos[region][shape][var] = {}
-                    for sample in samples_to_process:
-                        local_histos[region][shape][var][sample] = {"histo": build_hist(cfg), "sumw": 0.0}
-                            
-            # print(local_histos[region].keys())
-            # print(f"---> Final length : {len(local_histos[region].keys())}")
-                    
 
     # --- Process events ---
     for idx, chunk in enumerate(tqdm(job_results, desc=f"{file_path}", leave=False)):
+    #for idx, chunk in enumerate(job_results):
+        #print(f"Processing chunk {idx+1}/{len(job_results)}")
 
         for dataset, dset_data in chunk.items():
             #print(dataset, dataset not in samples_to_process)
@@ -286,12 +234,16 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                 print(f"File path: {file_path} Dataset: {dataset}, sumw: {sumw}")
 
             for region in regions:
+                #print(region)
+                #print(dset_data['events'].keys())
                 region_data = dset_data['events'].get(region)
+                #print(region_data.keys())
                 if region_data is None:
                     print(f"Region {region} not found in dataset {dataset}")
                     continue
                 
-                base_weights__ = region_data["weight"]
+                #print("sm" in region_data.keys())
+                base_weights = region_data["weight"]
                 if "sm" not in region_data:
                     print(f"Warning: 'sm' weight not found in events for dataset {dataset} region {region} file {file_path}")
                     continue
@@ -304,13 +256,8 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
 
                 # --- single-operator weights ---
                 for op in reweight_map:
-                    
-                    # normalize to sm 
-                    base_weights = base_weights__ / w_sm
-                    
                     if op == "sm":
                         weights_and_labels = [(w_sm, "sm")]
-                        
                     else:
                         w_op = region_data[op]
                         w_op_m1 = region_data[f"{op}_m1"]
@@ -341,51 +288,6 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                                         name = cfg["axis"].name
                                         histo.fill(region_data[name], weight=total_weight)
                             local_histos[region][label][var][dataset]["sumw"] += sumw
-                            
-                # Fill MC stat unc matrix for single ops
-                if save_matrix:
-                    # save sm only once 
-                    variance_weight_sm = (base_weights * region_data["sm"]) ** 2
-                    weights_and_labels = [
-                            (variance_weight_sm, "sm_variance"),
-                        ]
-                    # save variances and cross products 
-                    for op in reweight_map:
-                        if op != "sm":
-                            
-                            variance_p1_weight = (base_weights * region_data[op]) ** 2
-                            variance_m1_weight = (base_weights * region_data[op + "_m1"]) ** 2
-                            
-                            mixed_01  = 2*(base_weights * w_sm * base_weights * region_data[op])
-                            mixed_0m1 = 2*(base_weights * w_sm * base_weights * region_data[op + "_m1"])
-                            mixed_1m1 = 2*(base_weights * region_data[op] * base_weights * region_data[op + "_m1"])
-                            
-                            weights_and_labels.append((variance_p1_weight, f"{op}_plus_variance"))
-                            weights_and_labels.append((variance_m1_weight, f"{op}_minus_variance"))
-                            weights_and_labels.append((mixed_01, f"sm_{op}_mixed_variance"))
-                            weights_and_labels.append((mixed_0m1, f"sm_{op}_m1_mixed_variance"))
-                            weights_and_labels.append((mixed_1m1, f"{op}_{op}_m1_mixed_variance"))
-
-                    
-                    for weight, label in weights_and_labels:
-                        total_weight = weight
-                        for var, cfg in variables.items():
-                            vals = var_cache.get(var)
-                            histo = local_histos[region][label][var][dataset]["histo"]
-
-                            if vals is not None:
-                                histo.fill(vals, weight=total_weight)
-                            else:
-                                # multi-dim variables
-                                if "axis" in cfg:
-                                    if isinstance(cfg["axis"], list):
-                                        vals_dict = {ax.name: region_data[ax.name] for ax in cfg["axis"]}
-                                        histo.fill(**vals_dict, weight=total_weight)
-                                    else:
-                                        name = cfg["axis"].name
-                                        histo.fill(region_data[name], weight=total_weight)
-                            local_histos[region][label][var][dataset]["sumw"] += sumw
-                    
 
                 # --- two-operator weights ---
                 for op1, op2 in op_pairs:
@@ -403,64 +305,10 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                     w_op1 = region_data[op1]
                     w_op2 = region_data[op2]
                     w_mix_only = w_mix + w_sm - w_op1 - w_op2
-                    
-                    weights__ = [base_weights*w_mix, base_weights*w_mix_only]
-                    labels__ = [f"{op1}_{op2}", f"{op1}_{op2}_mix"]
-                    
-                    if save_matrix:
-                        
-                        # need to compute all cross products 
-                        # op_pairs does not have sm in it 
-                        
-                        variance_p11_weight = (base_weights * w_mix) ** 2 # F**2 sum(w(11)**2)
-                        variance_p11_sm_weight = 2*(base_weights * w_sm * base_weights * w_mix) # 2AF sum(w(0)w(11))
-                        
-                        w_op1_m1 = region_data[op1 + "_m1"]
-                        w_op2_m1 = region_data[op2 + "_m1"]
-                        
-                        mixed_op1_p1_op2_p1 = 2*(base_weights * w_op1 * base_weights * w_op2)
-                        mixed_op1_p1_op2_m1 = 2*(base_weights * w_op1 * base_weights * w_op2_m1)
-                        mixed_op1_p1_11 = 2*(base_weights * w_op1 * base_weights * w_mix)
-                        mixed_op2_p1_op1_m1 = 2*(base_weights * w_op2 * base_weights * w_op1_m1)
-                        mixed_op2_p1_11 = 2*(base_weights * w_op2 * base_weights * w_mix)
-                        mixed_op1_m1_op2_m1 = 2*(base_weights * w_op1_m1 * base_weights * w_op2_m1) 
-                        mixed_op1_m1_11 = 2*(base_weights * w_op1_m1 * base_weights * w_mix)
-                        mixed_op2_m1_11 = 2*(base_weights * w_op2_m1 * base_weights * w_mix)
-                        
-                        weights__ += [variance_p11_weight, variance_p11_sm_weight, mixed_op1_p1_op2_p1, mixed_op1_p1_op2_m1, mixed_op1_p1_11, mixed_op2_p1_op1_m1, mixed_op2_p1_11, mixed_op1_m1_op2_m1, mixed_op1_m1_11, mixed_op2_m1_11]
-                        labels__ += [f"{op1}_{op2}_variance", f"sm_{op1}_{op2}_mixed_variance",  f"{op1}_{op2}_mixed_variance", f"{op1}_{op2}_m1_mixed_variance", f"{op1}_{op1}_{op2}_mixed_variance", f"{op2}_{op1}_m1_mixed_variance", f"{op2}_{op1}_{op2}_mixed_variance", f"{op1}_m1_{op2}_m1_mixed_variance", f"{op1}_m1_{op1}_{op2}_mixed_variance", f"{op2}_m1_{op1}_{op2}_mixed_variance"]
 
-                        for op3 in non_sm_ops:
-                            if op3 != op1 and op3 != op2:
-                                w_op3 = region_data[op3]
-                                w_op3_m1 = region_data[op3 + "_m1"]
-                                
-                                mixed_op3_op1_op2_11 = 2*(base_weights * w_op3 * base_weights * w_mix)
-                                mixed_op3_m1_op1_op2_11 = 2*(base_weights * w_op3_m1 * base_weights * w_mix)
-                                weights__ += [mixed_op3_op1_op2_11, mixed_op3_m1_op1_op2_11]
-                                labels__ += [f"{op3}_{op1}_{op2}_mixed_variance", f"{op3}_m1_{op1}_{op2}_mixed_variance"]
-                                
-                        # mixed mixed 
-                        for op3, op4 in op_pairs:
-                            if (op3, op4) == (op1, op2) or (f"{op3}_{op4}_{op1}_{op2}_mixed_variance" in shapes__):
-                                continue 
-                            
-                            sn = f"{op1}_{op2}_{op3}_{op4}_mixed_variance"
-                            sn_alt = f"{op3}_{op4}_{op1}_{op2}_mixed_variance"
-
-                            if sn in labels__ or sn_alt in labels__:
-                                continue
-                            
-                            w_name_2 = f"{op3}_{op4}"
-                            w_mix_2 = region_data[w_name_2]
-                            mixed_op1_op2_op3_op4 = 2*(base_weights * w_mix * base_weights * w_mix_2)
-                            
-                            weights__.append(mixed_op1_op2_op3_op4)
-                            labels__.append(f"{op1}_{op2}_{op3}_{op4}_mixed_variance")
-                            
-
-                    for weight, label in zip(weights__, labels__):
-                        total_weight = weight
+                    for weight, label in zip([w_mix, w_mix_only],
+                                             [f"{op1}_{op2}", f"{op1}_{op2}_mix"]):
+                        total_weight = base_weights * weight
                         for var, cfg in variables.items():
                             vals = var_cache.get(var)
                             histo = local_histos[region][label][var][dataset]["histo"]
@@ -484,39 +332,6 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
 # -----------------------------
 # Merge histograms
 # -----------------------------
-
-def parallel_merge(partial_histos, nproc=4):
-    """Merge a list of histogram dictionaries using multiprocessing."""
-    total_start = time.time()
-    step = 0
-    histos = partial_histos[:]
-
-    print(f"[INFO] Starting parallel merge of {len(histos)} partial histograms using {nproc} processes")
-
-    while len(histos) > 1:
-        step += 1
-        start_time = time.time()
-
-        pairs = [(histos[i], histos[i+1]) for i in range(0, len(histos)-1, 2)]
-        print(f"[INFO] Step {step}: merging {len(pairs)} pairs ({len(histos)} inputs)")
-
-        with mp.Pool(processes=nproc) as pool:
-            merged_pairs = pool.starmap(merge_histos, pairs)
-
-        # If odd number of histos, carry over the last one
-        if len(histos) % 2 == 1:
-            merged_pairs.append(histos[-1])
-
-        elapsed = time.time() - start_time
-        print(f"[INFO] Step {step} complete: {len(merged_pairs)} histograms remain (took {elapsed:.2f} s)")
-        histos = merged_pairs
-
-    total_time = time.time() - total_start
-    print(f"[SUCCESS] All histograms merged into one final dictionary in {total_time:.2f} s")
-
-    return histos[0]
-
-"""
 def merge_histos(h1, h2):
     for region in h1.keys():
         for operator in h1[region].keys():
@@ -530,28 +345,7 @@ def merge_histos(h1, h2):
                     h1[region][operator][var][sample]["histo"] += h2[region][operator][var][sample]["histo"]
                     h1[region][operator][var][sample]["sumw"] += h2[region][operator][var][sample]["sumw"]
     return h1
-"""
-
-def merge_histos(h1, h2):
-    out = copy.deepcopy(h1)
-    for region in h1:
-        for operator in h1[region]:
-            for var in h1[region][operator]:
-                for sample in h1[region][operator][var]:
-                    h1_hist = h1[region][operator][var][sample]["histo"]
-                    h2_hist = h2[region][operator][var][sample]["histo"]
-
-                    # Unroll histograms (ensure consistent shape)
-                    h1_hist = hist_unroll(h1_hist)
-                    h2_hist = hist_unroll(h2_hist)
-
-                    out[region][operator][var][sample]["histo"] = h1_hist + h2_hist
-                    out[region][operator][var][sample]["sumw"] = (
-                        h1[region][operator][var][sample]["sumw"] +
-                        h2[region][operator][var][sample]["sumw"]
-                    )
-    return out
-   
+    
 def scale_samples(histos, lumi):
     for region in histos.keys():
         for operator in histos[region].keys():
@@ -644,12 +438,12 @@ def main():
     etaZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
 
     variables = {
-        # "mll": {"binning": (50, 3000, 150), "xaxis": r"$m_{\ell\ell}$ [GeV]"},
-        # "costhetastar_bins": {"binning": (-1, 1, 50), "xaxis": r"$cos \theta*$ [a.u.]"},
-        # "yZ_bins": {"binning": (-5, 5, 50), "xaxis": r"$y_{\ell\ell}$ [a.u.]"},
+        "mll": {"binning": (50, 3000, 150), "xaxis": r"$m_{\ell\ell}$ [GeV]"},
+        "costhetastar_bins": {"binning": (-1, 1, 50), "xaxis": r"$cos \theta*$ [a.u.]"},
+        "yZ_bins": {"binning": (-5, 5, 50), "xaxis": r"$y_{\ell\ell}$ [a.u.]"},
         "triple_diff": {"axis": [hist.axis.Variable(gen_mll_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
-        # "triple_diff_medium": {"axis": [hist.axis.Variable(mll_medium_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
-        # "triple_diff_optimized": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
+        "triple_diff_medium": {"axis": [hist.axis.Variable(mll_medium_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
+        "triple_diff_optimized": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
     }
 
     # Load LHE reweight JSON
@@ -667,17 +461,16 @@ def main():
     # Multiprocessing
     with mp.Pool(processes=args.nworkers) as pool:
         func = partial(process_file, regions=regions__, samples_to_process=samples_to_process,
-                       variables=variables, reweight_map=reweight_map, save_matrix=args.save_matrix)
+                       variables=variables, reweight_map=reweight_map)
         print(func, input_files)
         partial_histos = pool.map(func, input_files)
     
     print("Done processing files, now merging histograms...")
     # Merge histograms
-    #global_histos = partial_histos[0]
-    #for h in partial_histos[1:]:
-    #    merge_histos(global_histos, h)
-    global_histos = parallel_merge(partial_histos, nproc=args.nworkers)
-    
+    global_histos = partial_histos[0]
+    for h in partial_histos[1:]:
+        merge_histos(global_histos, h)
+
     # scale samples    
     print("Now scaling histograms...")
     global_histos = scale_samples(global_histos, lumi if args.luminosity == None else args.luminosity)
@@ -694,7 +487,7 @@ def main():
         pickle.dump(global_histos, f)
     print(f"Histograms saved to {output_file}")
     
-    #sys.exit(0)
+    sys.exit(0)
     
     plot_tasks = []
     for region in regions:

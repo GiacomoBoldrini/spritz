@@ -17,8 +17,10 @@ from itertools import combinations
 from tqdm import tqdm
 import mplhep as hep
 plt.style.use(hep.style.CMS)
-from config import datasets, regions, lumi, samples
+from config import datasets, regions, lumi, samples, year
 import time
+from spritz.framework.framework import get_fw_path
+import tempfile
 
 # -----------------------------
 # Arguments
@@ -31,7 +33,9 @@ def get_args():
     parser.add_argument("--input-dir", type=str, required=True, help="Folder with input pickle files")
     parser.add_argument("--lhe-json", type=str, required=True, help="JSON with LHE reweighting weights")
     parser.add_argument("--max-files", dest="max_files", type=int, required=False, help="maximum files to process, by default all", default=-1)
+    parser.add_argument("--only-merge", dest="only_merge", required=False, help="Only merge the results in output directory", default=False, action="store_true")
     parser.add_argument("--save-matrix", dest="save_matrix", required=False, help="Save matrix for correlated stat MC", default=False, action="store_true")
+    parser.add_argument("--normalize", dest="normalize", required=False, help="Normalize to SM all shapes", default=False, action="store_true")
     parser.add_argument("--lumi", dest="luminosity", type=float, required=False, help="Luminosity to normalize, default None", default=None)
     return parser.parse_args()
 
@@ -70,56 +74,11 @@ def renorm(xs, sumw, lumi):
     # print(scale)
     return scale
 
-cross_sectins = {
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_50_100_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_50_100_Photos/251014_153049",
-      "xsec": "1909.9894816",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_100_200_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_100_200_Photos/251014_153054",
-      "xsec": "172.69619",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_200_400_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_200_400_Photos/251014_102527",
-      "xsec": "2.9751425472",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_400_600_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_400_600_Photos/251014_102534",
-      "xsec": "0.19447485764",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_600_800_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_600_800_Photos/251014_153101",
-      "xsec": "0.047187595244",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_800_1000_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_800_1000_Photos/251014_153107",
-      "xsec": "0.010173648348",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1000_1500_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1000_1500_Photos/250904_134823",
-      "xsec": "0.0071970617",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1500_inf_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1500_inf_Photos/251013_080210",
-      "xsec": "0.000870364354627",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-}
+path_fw = get_fw_path()
+
+with open(f"{path_fw}/data/{year}/samples/samples.json") as file:
+        cross_sections = json.load(file)["samples"]
+
 
 def hist_unroll(h):
     """
@@ -172,7 +131,9 @@ def hist_unroll(h):
         numpy_view_unroll.variance = numpy_view.variance.T.flatten()
 
         return h_unroll
-    
+
+
+
 # -----------------------------
 # Process a single file
 # -----------------------------
@@ -180,7 +141,23 @@ from itertools import combinations
 import numpy as np
 import hist
 
-def process_file(file_path, regions, samples_to_process, variables, reweight_map, save_matrix):
+def build_hist(var_cfg):
+    if "binning" in var_cfg:
+        return hist.Hist(
+            hist.axis.Variable(np.linspace(*var_cfg["binning"]),
+                                name=var_cfg.get("name", ""),
+                                label=var_cfg.get("xaxis", "")),
+            storage=hist.storage.Weight()
+        )
+    elif "axis" in var_cfg:
+        if isinstance(var_cfg["axis"], list):
+            return hist.Hist(*var_cfg["axis"], storage=hist.storage.Weight())
+        else:
+            return hist.Hist(var_cfg["axis"], storage=hist.storage.Weight())
+    else:
+        raise ValueError(f"Variable config missing 'binning' or 'axis': {var_cfg}")
+
+def process_file(file_path, regions, samples_to_process, variables, reweight_map, save_matrix, out_dir=None):
     print(file_path)
     job_results = read_inputs([file_path])
 
@@ -188,22 +165,6 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
     non_sm_ops = [op for op in reweight_map if op != "sm"]
     op_pairs = list(combinations(non_sm_ops, 2))
 
-    # --- Pre-build histogram templates once ---
-    def build_hist(var_cfg):
-        if "binning" in var_cfg:
-            return hist.Hist(
-                hist.axis.Variable(np.linspace(*var_cfg["binning"]),
-                                   name=var_cfg.get("name", ""),
-                                   label=var_cfg.get("xaxis", "")),
-                storage=hist.storage.Weight()
-            )
-        elif "axis" in var_cfg:
-            if isinstance(var_cfg["axis"], list):
-                return hist.Hist(*var_cfg["axis"], storage=hist.storage.Weight())
-            else:
-                return hist.Hist(var_cfg["axis"], storage=hist.storage.Weight())
-        else:
-            raise ValueError(f"Variable config missing 'binning' or 'axis': {var_cfg}")
 
     # --- Initialize local histograms ---
     local_histos = {
@@ -275,7 +236,6 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
 
     # --- Process events ---
     for idx, chunk in enumerate(tqdm(job_results, desc=f"{file_path}", leave=False)):
-
         for dataset, dset_data in chunk.items():
             #print(dataset, dataset not in samples_to_process)
             if dataset not in samples_to_process:
@@ -291,22 +251,23 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                     print(f"Region {region} not found in dataset {dataset}")
                     continue
                 
-                base_weights__ = region_data["weight"]
+                
                 if "sm" not in region_data:
                     print(f"Warning: 'sm' weight not found in events for dataset {dataset} region {region} file {file_path}")
                     continue
-                w_sm = region_data["sm"]
+                
 
                 # cache variable values once
                 var_cache = {
                     var: region_data[var] for var in variables if var in region_data
                 }
+                
+                
+                base_weights = region_data["weight"]
+                w_sm = region_data["sm"]
 
                 # --- single-operator weights ---
                 for op in reweight_map:
-                    
-                    # normalize to sm 
-                    base_weights = base_weights__ / w_sm
                     
                     if op == "sm":
                         weights_and_labels = [(w_sm, "sm")]
@@ -345,7 +306,9 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                 # Fill MC stat unc matrix for single ops
                 if save_matrix:
                     # save sm only once 
-                    variance_weight_sm = (base_weights * region_data["sm"]) ** 2
+                    w_sm = base_weights * w_sm
+                    
+                    variance_weight_sm = (w_sm) ** 2
                     weights_and_labels = [
                             (variance_weight_sm, "sm_variance"),
                         ]
@@ -353,12 +316,15 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                     for op in reweight_map:
                         if op != "sm":
                             
-                            variance_p1_weight = (base_weights * region_data[op]) ** 2
-                            variance_m1_weight = (base_weights * region_data[op + "_m1"]) ** 2
+                            w_op = base_weights * region_data[op]
+                            w_op_m1 = base_weights * region_data[op + "_m1" ]
                             
-                            mixed_01  = 2*(base_weights * w_sm * base_weights * region_data[op])
-                            mixed_0m1 = 2*(base_weights * w_sm * base_weights * region_data[op + "_m1"])
-                            mixed_1m1 = 2*(base_weights * region_data[op] * base_weights * region_data[op + "_m1"])
+                            variance_p1_weight = (w_op) ** 2
+                            variance_m1_weight = (w_op_m1) ** 2
+                            
+                            mixed_01  = 2*(w_sm * w_op)
+                            mixed_0m1 = 2*(w_sm * w_op_m1)
+                            mixed_1m1 = 2*(w_op * w_op_m1)
                             
                             weights_and_labels.append((variance_p1_weight, f"{op}_plus_variance"))
                             weights_and_labels.append((variance_m1_weight, f"{op}_minus_variance"))
@@ -399,12 +365,12 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                             continue
                         w_name = w_name_alt
 
-                    w_mix = region_data[w_name]
-                    w_op1 = region_data[op1]
-                    w_op2 = region_data[op2]
+                    w_mix = region_data[w_name] * base_weights
+                    w_op1 = region_data[op1] * base_weights
+                    w_op2 = region_data[op2] * base_weights
                     w_mix_only = w_mix + w_sm - w_op1 - w_op2
                     
-                    weights__ = [base_weights*w_mix, base_weights*w_mix_only]
+                    weights__ = [w_mix, w_mix_only]
                     labels__ = [f"{op1}_{op2}", f"{op1}_{op2}_mix"]
                     
                     if save_matrix:
@@ -412,31 +378,31 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                         # need to compute all cross products 
                         # op_pairs does not have sm in it 
                         
-                        variance_p11_weight = (base_weights * w_mix) ** 2 # F**2 sum(w(11)**2)
-                        variance_p11_sm_weight = 2*(base_weights * w_sm * base_weights * w_mix) # 2AF sum(w(0)w(11))
+                        variance_p11_weight = (w_mix) ** 2 # F**2 sum(w(11)**2)
+                        variance_p11_sm_weight = 2*(w_sm * w_mix) # 2AF sum(w(0)w(11))
                         
-                        w_op1_m1 = region_data[op1 + "_m1"]
-                        w_op2_m1 = region_data[op2 + "_m1"]
+                        w_op1_m1 = region_data[op1 + "_m1"] * base_weights
+                        w_op2_m1 = region_data[op2 + "_m1"] * base_weights
                         
-                        mixed_op1_p1_op2_p1 = 2*(base_weights * w_op1 * base_weights * w_op2)
-                        mixed_op1_p1_op2_m1 = 2*(base_weights * w_op1 * base_weights * w_op2_m1)
-                        mixed_op1_p1_11 = 2*(base_weights * w_op1 * base_weights * w_mix)
-                        mixed_op2_p1_op1_m1 = 2*(base_weights * w_op2 * base_weights * w_op1_m1)
-                        mixed_op2_p1_11 = 2*(base_weights * w_op2 * base_weights * w_mix)
-                        mixed_op1_m1_op2_m1 = 2*(base_weights * w_op1_m1 * base_weights * w_op2_m1) 
-                        mixed_op1_m1_11 = 2*(base_weights * w_op1_m1 * base_weights * w_mix)
-                        mixed_op2_m1_11 = 2*(base_weights * w_op2_m1 * base_weights * w_mix)
+                        mixed_op1_p1_op2_p1 = 2*(w_op1 * w_op2)
+                        mixed_op1_p1_op2_m1 = 2*(w_op1 * w_op2_m1)
+                        mixed_op1_p1_11 = 2*(w_op1 * w_mix)
+                        mixed_op2_p1_op1_m1 = 2*(w_op2 * w_op1_m1)
+                        mixed_op2_p1_11 = 2*(w_op2 * w_mix)
+                        mixed_op1_m1_op2_m1 = 2*(w_op1_m1 * w_op2_m1) 
+                        mixed_op1_m1_11 = 2*(w_op1_m1 * w_mix)
+                        mixed_op2_m1_11 = 2*(w_op2_m1 * w_mix)
                         
                         weights__ += [variance_p11_weight, variance_p11_sm_weight, mixed_op1_p1_op2_p1, mixed_op1_p1_op2_m1, mixed_op1_p1_11, mixed_op2_p1_op1_m1, mixed_op2_p1_11, mixed_op1_m1_op2_m1, mixed_op1_m1_11, mixed_op2_m1_11]
                         labels__ += [f"{op1}_{op2}_variance", f"sm_{op1}_{op2}_mixed_variance",  f"{op1}_{op2}_mixed_variance", f"{op1}_{op2}_m1_mixed_variance", f"{op1}_{op1}_{op2}_mixed_variance", f"{op2}_{op1}_m1_mixed_variance", f"{op2}_{op1}_{op2}_mixed_variance", f"{op1}_m1_{op2}_m1_mixed_variance", f"{op1}_m1_{op1}_{op2}_mixed_variance", f"{op2}_m1_{op1}_{op2}_mixed_variance"]
 
                         for op3 in non_sm_ops:
                             if op3 != op1 and op3 != op2:
-                                w_op3 = region_data[op3]
-                                w_op3_m1 = region_data[op3 + "_m1"]
+                                w_op3 = region_data[op3] * base_weights
+                                w_op3_m1 = region_data[op3 + "_m1"] * base_weights
                                 
-                                mixed_op3_op1_op2_11 = 2*(base_weights * w_op3 * base_weights * w_mix)
-                                mixed_op3_m1_op1_op2_11 = 2*(base_weights * w_op3_m1 * base_weights * w_mix)
+                                mixed_op3_op1_op2_11 = 2*(w_op3 * w_mix)
+                                mixed_op3_m1_op1_op2_11 = 2*(w_op3_m1 * w_mix)
                                 weights__ += [mixed_op3_op1_op2_11, mixed_op3_m1_op1_op2_11]
                                 labels__ += [f"{op3}_{op1}_{op2}_mixed_variance", f"{op3}_m1_{op1}_{op2}_mixed_variance"]
                                 
@@ -452,8 +418,8 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                                 continue
                             
                             w_name_2 = f"{op3}_{op4}"
-                            w_mix_2 = region_data[w_name_2]
-                            mixed_op1_op2_op3_op4 = 2*(base_weights * w_mix * base_weights * w_mix_2)
+                            w_mix_2 = region_data[w_name_2] * base_weights
+                            mixed_op1_op2_op3_op4 = 2*(w_mix * w_mix_2)
                             
                             weights__.append(mixed_op1_op2_op3_op4)
                             labels__.append(f"{op1}_{op2}_{op3}_{op4}_mixed_variance")
@@ -477,89 +443,173 @@ def process_file(file_path, regions, samples_to_process, variables, reweight_map
                                         histo.fill(region_data[name], weight=total_weight)
                             local_histos[region][label][var][dataset]["sumw"] += sumw
 
-    return local_histos
+     # --- Save to disk ---
+    if out_dir is None:
+        out_dir = tempfile.gettempdir()  # fallback
+    os.makedirs(out_dir, exist_ok=True)
 
+    # base_name = os.path.basename(file_path).replace(".pkl", "_histos.pkl")
+    fd, out_file = tempfile.mkstemp(suffix="_histos.pkl", dir=out_dir)
+    os.close(fd)
+    # out_file = os.path.join(out_dir, base_name)
+
+    with open(out_file, "wb") as f:
+        pickle.dump(local_histos, f, protocol=4)
+
+    # Free memory
+    del local_histos
+
+    return out_file
 
 
 # -----------------------------
 # Merge histograms
 # -----------------------------
 
-def parallel_merge(partial_histos, nproc=4):
-    """Merge a list of histogram dictionaries using multiprocessing."""
-    total_start = time.time()
-    step = 0
-    histos = partial_histos[:]
 
-    print(f"[INFO] Starting parallel merge of {len(histos)} partial histograms using {nproc} processes")
-
-    while len(histos) > 1:
-        step += 1
-        start_time = time.time()
-
-        pairs = [(histos[i], histos[i+1]) for i in range(0, len(histos)-1, 2)]
-        print(f"[INFO] Step {step}: merging {len(pairs)} pairs ({len(histos)} inputs)")
-
-        with mp.Pool(processes=nproc) as pool:
-            merged_pairs = pool.starmap(merge_histos, pairs)
-
-        # If odd number of histos, carry over the last one
-        if len(histos) % 2 == 1:
-            merged_pairs.append(histos[-1])
-
-        elapsed = time.time() - start_time
-        print(f"[INFO] Step {step} complete: {len(merged_pairs)} histograms remain (took {elapsed:.2f} s)")
-        histos = merged_pairs
-
-    total_time = time.time() - total_start
-    print(f"[SUCCESS] All histograms merged into one final dictionary in {total_time:.2f} s")
-
-    return histos[0]
-
-"""
 def merge_histos(h1, h2):
-    for region in h1.keys():
-        for operator in h1[region].keys():
-            for var in h1[region][operator].keys():
-                for sample in h1[region][operator][var].keys():
-                    # unroll if needed... This operation should be done only on h2 but ok...
-                    h1[region][operator][var][sample]["histo"] = hist_unroll(h1[region][operator][var][sample]["histo"])
-                    h2[region][operator][var][sample]["histo"] = hist_unroll(h2[region][operator][var][sample]["histo"])
-                    
-                    #now merge them 
-                    h1[region][operator][var][sample]["histo"] += h2[region][operator][var][sample]["histo"]
+    for region in h2:
+        if region not in h1:
+            h1[region] = {}
+        for operator in h2[region]:
+            #print(operator)
+            if operator not in h1[region]:
+                h1[region][operator] = {}
+            for var in h2[region][operator]:
+                if var not in h1[region][operator]:
+                    h1[region][operator][var] = {}
+                for sample in h2[region][operator][var]:
+                    if sample not in h1[region][operator][var]:
+                        h1[region][operator][var][sample] = {
+                            "histo": h2[region][operator][var][sample]["histo"].copy(),
+                            "sumw": 0.0
+                        }
+
+                    # Unroll histograms to ensure compatible shapes
+                    h1_hist = hist_unroll(h1[region][operator][var][sample]["histo"])
+                    h2_hist = hist_unroll(h2[region][operator][var][sample]["histo"])
+                    h1[region][operator][var][sample]["histo"] = h1_hist + h2_hist
                     h1[region][operator][var][sample]["sumw"] += h2[region][operator][var][sample]["sumw"]
+
     return h1
+
+"""
+def merge_histos_files_pair(file_pair, out_dir):
+    f1, f2 = file_pair
+    print(f1, f2)
+    with open(f1, "rb") as f:
+        h1 = pickle.load(f)
+    with open(f2, "rb") as f:
+        h2 = pickle.load(f)
+    
+    print("Loaded files")
+    merge_histos(h1, h2)  # in-place
+    
+    # Save merged histograms to a new temporary file
+    fd, merged_file = tempfile.mkstemp(prefix="tmp_merge_", suffix=".pkl", dir=out_dir)
+    os.close(fd)
+    with open(merged_file, "wb") as f:
+        pickle.dump(h1, f, protocol=4)
+    
+    # Optionally delete the original files to free disk
+    os.remove(f1)
+    os.remove(f2)
+    
+    return merged_file
+    
 """
 
-def merge_histos(h1, h2):
-    out = copy.deepcopy(h1)
-    for region in h1:
-        for operator in h1[region]:
-            for var in h1[region][operator]:
-                for sample in h1[region][operator][var]:
-                    h1_hist = h1[region][operator][var][sample]["histo"]
-                    h2_hist = h2[region][operator][var][sample]["histo"]
+def merge_histos_files_pair(file_pair, out_dir):
+    f1, f2 = file_pair
+    with open(f1, "rb") as ff1:
+        h1 = pickle.load(ff1)
+    with open(f2, "rb") as ff2:
+        h2 = pickle.load(ff2)
 
-                    # Unroll histograms (ensure consistent shape)
-                    h1_hist = hist_unroll(h1_hist)
-                    h2_hist = hist_unroll(h2_hist)
+    merge_histos(h1, h2)  # in-place merge
 
-                    out[region][operator][var][sample]["histo"] = h1_hist + h2_hist
-                    out[region][operator][var][sample]["sumw"] = (
-                        h1[region][operator][var][sample]["sumw"] +
-                        h2[region][operator][var][sample]["sumw"]
-                    )
-    return out
-   
+    # Save merged histograms to a temporary file
+    fd, merged_file = tempfile.mkstemp(prefix="tmp_merge_", suffix=".pkl", dir=out_dir)
+    os.close(fd)
+    with open(merged_file, "wb") as f:
+        pickle.dump(h1, f, protocol=4)
+
+    # Delete input files immediately
+    os.remove(f1)
+    os.remove(f2)
+
+    return merged_file
+
+"""
+def merge_histos_from_files(file_list, out_dir, nproc=4):
+    files = file_list[:]
+    
+    step = 0
+    while len(files) > 1:
+        step += 1
+        pairs = [(files[i], files[i+1]) for i in range(0, len(files)-1, 2)]
+        leftover = files[-1] if len(files) % 2 == 1 else None
+        
+        print(f"[Step {step}] Merging {len(pairs)} pairs...")
+        with mp.Pool(nproc) as pool:
+            merge_func = partial(merge_histos_files_pair, out_dir=out_dir)
+            merged_files = list(tqdm(pool.imap_unordered(merge_func, pairs), total=len(pairs)))
+    
+        files = merged_files
+        if leftover:
+            files.append(leftover)
+    
+    # Load the final merged histogram into memory
+    final_file = files[0]
+    with open(final_file, "rb") as f:
+        final_histos = pickle.load(f)
+    
+    return final_histos
+"""
+
+def merge_histos_from_files(file_list, out_dir, nproc=4):
+    files = list(file_list)
+
+    step = 0
+    while len(files) > 1:
+        step += 1
+        print(f"[Step {step}] {len(files)} files remaining...")
+
+        # Pair files for merging
+        pairs = [(files[i], files[i+1]) for i in range(0, len(files)-1, 2)]
+        leftover = files[-1] if len(files) % 2 == 1 else None
+
+        merge_func = partial(merge_histos_files_pair, out_dir=out_dir)
+        with mp.Pool(nproc) as pool:
+            merged_files = list(tqdm(pool.imap_unordered(merge_func, pairs), total=len(pairs), desc=f"Step {step}"))
+
+        # Carry leftover forward
+        files = merged_files
+        if leftover:
+            files.append(leftover)
+
+    # Only one file remains now
+    final_file = files[0]
+
+    # Rename/move to final output path if you want
+    final_output = os.path.join(out_dir, "histos_merged.pkl")
+    os.replace(final_file, final_output)
+
+    with open(final_output, "rb") as f:
+        final_histos = pickle.load(f)
+    
+    return final_histos
+
 def scale_samples(histos, lumi):
     for region in histos.keys():
         for operator in histos[region].keys():
             for var in histos[region][operator].keys():
                 for sample in histos[region][operator][var].keys():
-                    xs = float(cross_sectins[sample]["xsec"])
+                    xs = float(cross_sections[sample]["xsec"])
                     sumw = histos[region][operator][var][sample]["sumw"]
-                    scale = renorm(xs, sumw, lumi)
+                    scale = 1.0
+                    if sumw != 0:
+                        scale = renorm(xs, sumw, lumi)
                     histos[region][operator][var][sample]["histo"] = histos[region][operator][var][sample]["histo"] * scale
                 
     return histos
@@ -575,7 +625,88 @@ def merge_samples(histos):
                 histos[region][operator][var]["all"] = {"histo": default, "sumw": 0}
                     
     return histos
+
+def normalize_to_sm(histos, reweight_map, save_matrix):
     
+    # nominal histos can be normalized by dividing for SM 
+    # while matrix elements should be divided by sm**2
+    non_sm_ops = [op for op in reweight_map if op != "sm"]
+    op_pairs = list(combinations(non_sm_ops, 2))
+    
+    nominal_histos = ["sm"] + [s for op in reweight_map if op != "sm" for s in [op, op+"_m1", op+"_lin", op+"_quad"]] + [f"{a}_{b}" for a, b in op_pairs] + [f"{a}_{b}_mix" for a, b in op_pairs]
+    matrix_histos = []
+    
+    if save_matrix:
+        matrix_histos = ["sm_variance"] + [f"{op}_plus_variance" for op in non_sm_ops] + [f"{op}_minus_variance" for op in non_sm_ops] + [f"sm_{op}_mixed_variance" for op in non_sm_ops] + [f"sm_{op}_m1_mixed_variance" for op in non_sm_ops] + [f"{op}_{op}_m1_mixed_variance" for op in non_sm_ops]
+                
+        for op1, op2 in op_pairs:
+                matrix_histos += [f"{op1}_{op2}_variance", f"sm_{op1}_{op2}_mixed_variance", f"{op1}_{op2}_mixed_variance", f"{op1}_{op2}_m1_mixed_variance", f"{op1}_{op1}_{op2}_mixed_variance", f"{op2}_{op1}_m1_mixed_variance", f"{op2}_{op1}_{op2}_mixed_variance", f"{op1}_m1_{op2}_m1_mixed_variance", f"{op1}_m1_{op1}_{op2}_mixed_variance", f"{op2}_m1_{op1}_{op2}_mixed_variance"]
+            
+                # single mixed 
+                
+                for op3 in non_sm_ops:
+                    if op3 != op1 and op3 != op2:
+                        matrix_histos += [f"{op3}_{op1}_{op2}_mixed_variance", f"{op3}_m1_{op1}_{op2}_mixed_variance"]
+                                
+                # mixed mixed 
+                for op3, op4 in op_pairs:
+                    if (op3, op4) == (op1, op2):
+                        continue
+                    
+                    sn = f"{op1}_{op2}_{op3}_{op4}_mixed_variance"
+                    sn_alt = f"{op3}_{op4}_{op1}_{op2}_mixed_variance"
+
+                    if sn in matrix_histos or sn_alt in matrix_histos:
+                        continue
+                        
+                    matrix_histos.append(f"{op1}_{op2}_{op3}_{op4}_mixed_variance")
+
+    
+    new_h = {}
+    for region in histos.keys():
+        new_h[region] = {}
+        for op in histos[region].keys():
+            new_h[region][op] = {}
+            is_matrix = False 
+            if op in matrix_histos:
+                is_matrix = True
+            elif op in nominal_histos:
+                is_matrix = False 
+            else:
+                print(f"-->ERROR shape {op} not in any histos")
+                
+            for var in histos[region][op].keys():
+                new_h[region][op][var] = {}
+                for sample in histos[region][op][var].keys():
+                    
+                    
+                    
+                    h = histos[region][op][var][sample]["histo"]
+                    h_sm = histos[region]["sm"][var][sample]["histo"]
+
+                    h_val = h.view().value
+                    h_var = h.view().variance
+                    sm_val = h_sm.view().value
+
+                    mask = sm_val != 0  # avoid division by zero
+                    ratio = np.zeros_like(h_val)
+                    variance = np.zeros_like(h_var)
+                    
+                    
+                    if not is_matrix:
+                        ratio[mask] = h_val[mask] / sm_val[mask]
+                        variance[mask] = h_var[mask] / (sm_val[mask] ** 2) # important to have this properly
+                    else:
+                        ratio[mask] = h_val[mask] / (sm_val[mask]**2) # because it is a variance in the end
+                        variance[mask] = np.zeros_like(h_val[mask])
+
+                    h_new = h.copy()
+                    h_new.view().value = ratio
+                    h_new.view().variance = variance
+                    
+                    new_h[region][op][var][sample] = {"histo": h_new, "sumw": histos[region][op][var][sample]["sumw"]}
+                    
+    return new_h
 
 # -----------------------------
 # Plot histograms
@@ -625,13 +756,13 @@ def main():
     regions__ = ["inc_mm"]
     
     samples_to_process = [
-        "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne",
+        "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_120_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne",
-        "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne",
+        "DYMuMu_NLO_EFT_SMEFTatNLO_mll120_200_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos_startingOne",
     ]
 
@@ -663,20 +794,28 @@ def main():
     input_files = glob(args.input_dir + "/*/chunks_job.pkl")[:args.max_files]
     
     
+    if not args.only_merge:
 
-    # Multiprocessing
-    with mp.Pool(processes=args.nworkers) as pool:
-        func = partial(process_file, regions=regions__, samples_to_process=samples_to_process,
-                       variables=variables, reweight_map=reweight_map, save_matrix=args.save_matrix)
-        print(func, input_files)
-        partial_histos = pool.map(func, input_files)
+        # Multiprocessing
+        with mp.Pool(processes=args.nworkers if len(input_files) > args.nworkers else len(input_files)) as pool:
+            func = partial(process_file, regions=regions__, samples_to_process=samples_to_process,
+                        variables=variables, reweight_map=reweight_map, save_matrix=args.save_matrix, out_dir=args.output)
+            #print(func, input_files)
+            partial_histos = pool.map(func, input_files)
+        
+        print(partial_histos)
+        print("Done processing files, now merging histograms...")
+        
+    else:
+        partial_histos = glob(args.output + "/*.pkl")
+        print(partial_histos)
+        print(partial_histos)
     
-    print("Done processing files, now merging histograms...")
-    # Merge histograms
-    #global_histos = partial_histos[0]
-    #for h in partial_histos[1:]:
-    #    merge_histos(global_histos, h)
-    global_histos = parallel_merge(partial_histos, nproc=args.nworkers)
+    # global_histos = parallel_merge(partial_histos, partial_histos[0], nproc=args.nworkers if len(partial_histos) > args.nworkers else len(partial_histos))
+    
+    global_histos = merge_histos_from_files(partial_histos, args.output, nproc=args.nworkers if len(partial_histos) > args.nworkers else len(partial_histos))
+    
+    #sys.exit(0)
     
     # scale samples    
     print("Now scaling histograms...")
@@ -685,16 +824,17 @@ def main():
     print("Now merging samples...")
     global_histos = merge_samples(global_histos)
     
-    
+    if args.normalize: 
+        global_histos = normalize_to_sm(global_histos, reweight_map, args.save_matrix)
     
     # Save merged histograms
     output_file = os.path.join(args.output, "histos_merged.pkl")
     with open(output_file, "wb") as f:
-        print(global_histos["inc_mm"].keys())
+        print(len(global_histos["inc_mm"].keys()))
         pickle.dump(global_histos, f)
     print(f"Histograms saved to {output_file}")
     
-    #sys.exit(0)
+    sys.exit(0)
     
     plot_tasks = []
     for region in regions:

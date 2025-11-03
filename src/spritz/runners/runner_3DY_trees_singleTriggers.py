@@ -590,9 +590,15 @@ def process(events, **kwargs):
                 if "50_100" in dataset or dataset in ["DYmm_M-50", "DYee_M-50"]:
                     events = events[(lhe_mll >= 50) & (lhe_mll <= 100)]
                     print("mass < 100 > 50 GeV: ", len(events))
+                if "50_120" in dataset or "50to120" in dataset:
+                    events = events[(lhe_mll >= 50) & (lhe_mll <= 120)]
+                    print("mass < 120 > 50 GeV: ", len(events))
                 if "100_200" in dataset or "100to200" in dataset:
                     events = events[(lhe_mll > 100) & (lhe_mll <= 200)]
                     print("mass < 200 > 100 GeV: ", len(events))
+                if "120_200" in dataset or "120to200" in dataset:
+                    events = events[(lhe_mll > 120) & (lhe_mll <= 200)]
+                    print("mass < 200 > 120 GeV: ", len(events))
                 if "200_400" in dataset or "200to400" in dataset:
                     events = events[(lhe_mll > 200) & (lhe_mll <= 400)]
                     print("mass < 400 > 200 GeV: ", len(events))
