@@ -83,7 +83,7 @@ def main():
         variables = list(f[region][operators[0]].keys())
         
         for var in variables: 
-            
+            print(f"-----> var {var}") 
             histo_labels = []
             
             h_sm = f[region]["sm"][var]["all"]["histo"]
@@ -130,55 +130,56 @@ def main():
                 
                 #sys.exit(0)
                 # cycle on variables 
-                for var in variables:
+                
+                # for var in variables:
                     
-                    hist_matrix = {}
-                    
-                    for i in range(0, labels.shape[0]):
-                        for j in range(i, labels.shape[1]):
-                            sn__ = get_shape_name(labels[i,j])
-                            if isinstance(sn__, str):
-                                hist_matrix[(i,j)] = f[region][sn__][var]["all"]["histo"]
-                            else:
-                                perm_name = "_".join(sn__[0]) + sn__[1]
-                                if perm_name not in f[region].keys():
-                                    perm_name = "_".join(sn__[0][::-1]) + sn__[1]
-                                    
-                                #print(len(f[region].keys()))
-                                hist_matrix[(i,j)] = f[region][perm_name][var]["all"]["histo"]
+                hist_matrix = {}
+                
+                for i in range(0, labels.shape[0]):
+                    for j in range(i, labels.shape[1]):
+                        sn__ = get_shape_name(labels[i,j])
+                        if isinstance(sn__, str):
+                            hist_matrix[(i,j)] = f[region][sn__][var]["all"]["histo"]
+                        else:
+                            perm_name = "_".join(sn__[0]) + sn__[1]
+                            if perm_name not in f[region].keys():
+                                perm_name = "_".join(sn__[0][::-1]) + sn__[1]
+                                
+                            #print(len(f[region].keys()))
+                            hist_matrix[(i,j)] = f[region][perm_name][var]["all"]["histo"]
 
-                    # Determine X (numerical) binning from one of the histograms
-                    x_edges = hist_matrix[(0,0)].axes[0].edges
-                    x_centers = 0.5 * (x_edges[:-1] + x_edges[1:])
+                # Determine X (numerical) binning from one of the histograms
+                x_edges = hist_matrix[(0,0)].axes[0].edges
+                x_centers = 0.5 * (x_edges[:-1] + x_edges[1:])
 
-                    # Create 3D histogram: numeric X, categorical Y and Z
-                    histo_name = f"histo_correlation"
-                    h3 = Hist.new.Reg(len(x_edges)-1, x_edges[0], x_edges[-1], name="x") \
-                                .StrCategory(categories, name="y") \
-                                .StrCategory(categories, name="z") \
-                                .Double()
+                # Create 3D histogram: numeric X, categorical Y and Z
+                histo_name = f"histo_correlation"
+                h3 = Hist.new.Reg(len(x_edges)-1, x_edges[0], x_edges[-1], name="x") \
+                            .StrCategory(categories, name="y") \
+                            .StrCategory(categories, name="z") \
+                            .Double()
 
-                    # Fill the 3D histogram
-                    for (i, j), h in tqdm(hist_matrix.items(), desc=f"Filling 3D histogram {var}", unit="pair"):
-                        y_label = categories[i]
-                        z_label = categories[j]
+                # Fill the 3D histogram
+                for (i, j), h in tqdm(hist_matrix.items(), desc=f"Filling 3D histogram {var}", unit="pair"):
+                    y_label = categories[i]
+                    z_label = categories[j]
 
-                        # Convert the 1D hist.Hist to values and edges
-                        x_values = h.values().flatten()
-                        x_bin_edges = h.axes[0].edges
+                    # Convert the 1D hist.Hist to values and edges
+                    x_values = h.values().flatten()
+                    x_bin_edges = h.axes[0].edges
 
-                        # Fill using X-bin centers
-                        for x_idx, weight in enumerate(x_values):
-                            x_center = 0.5 * (x_bin_edges[x_idx] + x_bin_edges[x_idx + 1])
-                            h3.fill(x=x_center, y=y_label, z=z_label, weight=weight)
+                    # Fill using X-bin centers
+                    for x_idx, weight in enumerate(x_values):
+                        x_center = 0.5 * (x_bin_edges[x_idx] + x_bin_edges[x_idx + 1])
+                        h3.fill(x=x_center, y=y_label, z=z_label, weight=weight)
 
-                    # Store in output dict
-                    key = f"{region}/{var}/nominal/{histo_name}"
-                    if key not in dout:
-                        dout[key] = h3.copy()
-                    else:
-                        print("ERROR: CORRELATION MATRIX ALREADY IN OUTPUT DICT!")
-                        sys.exit(0)
+                # Store in output dict
+                key = f"{region}/{var}/nominal/{histo_name}"
+                if key not in dout:
+                    dout[key] = h3.copy()
+                else:
+                    print(f"ERROR: CORRELATION MATRIX ALREADY IN OUTPUT DICT! {region}/{var}/nominal/{histo_name}")
+                    sys.exit(0)
             
             
     

@@ -23,62 +23,18 @@ import matplotlib.colors as mcolors
 from scipy.stats import norm
 from scipy.optimize import curve_fit
 import random
+from spritz.framework.framework import get_fw_path
+from config import datasets, regions, lumi, samples, year
 
 def renorm(xs, sumw, lumi):
     scale = xs * 1000 * lumi / sumw
     # print(scale)
     return scale
 
-cross_sectins = {
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_50_100_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_50_100_Photos/251014_153049",
-      "xsec": "1909.9894816",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_100_200_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_100_200_Photos/251014_153054",
-      "xsec": "172.69619",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_200_400_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_200_400_Photos/251014_102527",
-      "xsec": "2.9751425472",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_400_600_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_400_600_Photos/251014_102534",
-      "xsec": "0.19447485764",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_600_800_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_600_800_Photos/251014_153101",
-      "xsec": "0.047187595244",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_800_1000_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_800_1000_Photos/251014_153107",
-      "xsec": "0.010173648348",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1000_1500_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1000_1500_Photos/250904_134823",
-      "xsec": "0.0071970617",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-    "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne":{
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1500_inf_Photos/ZDYEFT-nanoaod18_SMEFTatNLO_mll_1500_inf_Photos/251013_080210",
-      "xsec": "0.000870364354627",
-      "kfact": "1.000",
-      "ref": "A1"
-    },
-}
+path_fw = get_fw_path()
+
+with open(f"{path_fw}/data/{year}/samples/samples.json") as file:
+        cross_sections = json.load(file)["samples"]
 
 # -----------------------------
 # Arguments
@@ -111,11 +67,11 @@ def initial_mll_binning(min_bin_width):
         binning.append(last_stop)
     return np.array(binning)
 
-def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighted_events=2, region="inc_mm"):
+def optimize_mll_binning(var, costheta_bins, rapll_abs_bins, min_bin_width, min_weighted_events=2, region="inc_mm"):
     """
     Compute global mll binning:
     - Each bin respects min_bin_width
-    - Each bin has at least min_weighted_events in every (costheta, yZ) bin
+    - Each bin has at least min_weighted_events in every (costheta, rapll_abs_bins) bin
     - Each EFT operator component (lin/quad) has relative stat. uncertainty <= max_rel_unc
     """
     import numpy as np
@@ -124,30 +80,30 @@ def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighte
     mll_bins = initial_mll_binning(min_bin_width)
 
     n_costheta = len(costheta_bins) - 1
-    n_yZ = len(yZ_bins) - 1
+    n_rapll = len(rapll_abs_bins) - 1
 
     # --- First, enforce minimum weighted events ---
     merging_needed = True
     while merging_needed:
         merging_needed = False
-        counts_per_bin = np.zeros((len(mll_bins)-1, n_costheta, n_yZ))
+        counts_per_bin = np.zeros((len(mll_bins)-1, n_costheta, n_rapll))
 
         for i in range(n_costheta):
-            for j in range(n_yZ):
+            for j in range(n_rapll):
                 for sample in var.keys():
                     data = var[sample][region]
                     mll_vals = np.array(data["mll"])
                     costheta_vals = np.array(data["costhetastar_bins"])
-                    yZ_vals = np.array(data["yZ_bins"])
+                    rapll_abs_vals = np.array(data["rapll_abs"])
                     weights = np.array(data["weight"])
                     sm = np.array(data["sm"])
                     sumw_sample = data["sumw"]
 
                     mask = (np.digitize(costheta_vals, costheta_bins)-1 == i) & \
-                           (np.digitize(yZ_vals, yZ_bins)-1 == j)
+                           (np.digitize(rapll_abs_vals, rapll_abs_bins)-1 == j)
                     if np.any(mask):
                         counts, _ = np.histogram(mll_vals[mask], bins=mll_bins, weights=weights[mask]*sm[mask])
-                        xs = float(cross_sectins[sample]["xsec"])
+                        xs = float(cross_sections[sample]["xsec"])
                         scale = renorm(xs, sumw_sample, lumi)
                         counts_per_bin[:, i, j] += counts*scale
 
@@ -198,11 +154,16 @@ def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighte
 
         print(f"Current mll bins after min_weighted_events: {mll_bins}")
         """
-        
+    sys.exit(0)
     # --- Second, enforce max relative uncertainty per operator ---
-    max_rel_unc = 0.30  # 20%
+    max_rel_unc = 0.3  # 50%
     operators = ["cqlm2","cql32","cqe2","cll1221","cpdc","cpwb","cpl2","c3pl1","c3pl2","cpmu","cpqmi","cpq3i","cpq3","cpqm","cpu","cpd"]  # replace with full list if needed
-    operators = ["c3pl1", "cll1221","cpl2","cpwb","cpq3i"]
+    operators = ["cpqmi"]
+    labels = []
+    for op in operators:
+        labels.append(f"{op}_lin")
+        labels.append(f"{op}_quad")
+        
     merging_needed = True
     while merging_needed:
         merging_needed = False
@@ -210,25 +171,26 @@ def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighte
         n_mll_bins = len(mll_bins)-1
 
         # sumw and sumw2 for stat uncertainty
-        sumw = np.zeros((n_mll_bins, n_costheta, n_yZ, n_ops))
+        sumw = np.zeros((n_mll_bins, n_costheta, n_rapll, n_ops))
         sumw2 = np.zeros_like(sumw)
 
         for i in range(n_costheta):
-            for j in range(n_yZ):
+            for j in range(n_rapll):
                 for sample in var.keys():
                     data = var[sample][region]
                     mll_vals = np.array(data["mll"])
                     costheta_vals = np.array(data["costhetastar_bins"])
-                    yZ_vals = np.array(data["yZ_bins"])
+                    rapll_abs_vals = np.array(data["rapll_abs"])
+                    #print(sample, rapll_abs_vals)
                     weights = np.array(data["weight"])
                     sumw_sample = data["sumw"]
 
                     mask_xy = (np.digitize(costheta_vals, costheta_bins)-1 == i) & \
-                              (np.digitize(yZ_vals, yZ_bins)-1 == j)
+                              (np.digitize(rapll_abs_vals, rapll_abs_bins)-1 == j)
                     if not np.any(mask_xy):
                         continue
 
-                    xs = float(cross_sectins[sample]["xsec"])
+                    xs = float(cross_sections[sample]["xsec"])
                     scale = renorm(xs, sumw_sample, lumi)
 
                     for op_idx, op in enumerate(operators):
@@ -253,9 +215,29 @@ def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighte
         # --- Step 2: relative uncertainty check ---
         rel_unc = np.full_like(sumw, np.inf, dtype=float)
         nonzero = sumw != 0.0
-        rel_unc[nonzero] = np.sqrt(sumw2[nonzero]) / np.abs(sumw[nonzero])
+        
+        print("rel_unc shape:", rel_unc.shape)
+        
+        rel_unc[nonzero] = abs(np.sqrt(sumw2[nonzero]) / sumw[nonzero])
+        
+        coords = np.argwhere(np.isinf(rel_unc))
+        for c in coords:
+            print("inf rel unc at:", c, " sumw:", sumw[tuple(c)], " sumw2:", sumw2[tuple(c)], " sqrt(sumw2):", np.sqrt(sumw2[tuple(c)]), " rel_unc:", abs(np.sqrt(sumw2[tuple(c)]) / sumw[tuple(c)]))
+            
+
+        coords = np.argwhere(rel_unc>max_rel_unc)
+        for c in coords:
+            print(f"rel unc > {max_rel_unc} at:", c, "  component: ", labels[c[3]], " sumw:", sumw[tuple(c)], " sumw2:", sumw2[tuple(c)], " sqrt(sumw2):", np.sqrt(sumw2[tuple(c)]))
+            
         max_rel_unc_per_mll = rel_unc.max(axis=(1,2,3))
+        
+        print("max_rel_unc_per_mll")
+        
+        print(max_rel_unc_per_mll)
+        
         bad_bins_unc = np.where(max_rel_unc_per_mll > max_rel_unc)[0]
+        
+        
 
         # Combine all failing bins
         #bad_bins = sorted(set(bad_bins_events.tolist() + bad_bins_unc.tolist()))
@@ -317,7 +299,7 @@ def optimize_mll_binning(var, costheta_bins, yZ_bins, min_bin_width, min_weighte
             print(f"Bins to delete: {to_delete}")
             mll_bins = np.delete(mll_bins, to_delete)
 
-            print(f"Current mll bins after rel_unc check: {mll_bins}")
+            print(f"Current mll bins {len(mll_bins)} after rel_unc check: {mll_bins}")
 
     return mll_bins
 
@@ -328,15 +310,15 @@ def process_single_file(input_file, regions, samples):
             region: {
                 "mll": [],
                 "costhetastar_bins": [],
-                "yZ_bins": [],
+                "rapll_abs": [],
                 "weight": [],
                 "sumw": 0
             } for region in regions
         } for sample in samples
     }
     
-    operators = ["sm","cqlm2","cql32","cqe2","cll1221","cpdc","cpwb","cpl2","c3pl1","c3pl2","cpmu","cpqmi","cpq3i","cpq3","cpqm","cpu","cpd"]
-    operators = ["sm", "c3pl1", "c3pl2", "cll1221","cpd","cpl2","cpwb","cpu","cpq3i"]
+    # operators = ["sm","cqlm2","cql32","cqe2","cll1221","cpdc","cpwb","cpl2","c3pl1","c3pl2","cpmu","cpqmi","cpq3i","cpq3","cpqm","cpu","cpd"]
+    operators = ["sm", "cpqmi"]
     # now add reweighting weights for lin and quad components
     
     # --- single-operator weights ---
@@ -354,6 +336,9 @@ def process_single_file(input_file, regions, samples):
     job_result = read_chunks(input_file)
 
     for chunk in job_result:
+        #print(chunk.keys(), chunk["result"].keys(), input_file)
+        if "real_results" not in chunk["result"]:
+            continue
         chunk = chunk["result"]["real_results"]
         for dataset, dset_data in chunk.items():
             if dataset not in samples:
@@ -373,7 +358,7 @@ def process_single_file(input_file, regions, samples):
                 
                 var[dataset][region]["mll"] += region_data["mll"].tolist()
                 var[dataset][region]["costhetastar_bins"] += region_data["costhetastar_bins"].tolist()
-                var[dataset][region]["yZ_bins"] += region_data["yZ_bins"].tolist()
+                var[dataset][region]["rapll_abs"] += region_data["rapll_abs"].tolist()
                 var[dataset][region]["weight"] += (base_weights).tolist()
                 var[dataset][region]["sumw"] += sumw  # sumw per dataset, or optionally divide per region
                 
@@ -401,15 +386,16 @@ def merge_vars(var_list, samples, regions):
             region: {
                 "mll": [],
                 "costhetastar_bins": [],
-                "yZ_bins": [],
+                "rapll_abs": [],
                 "weight": [],
                 "sumw": 0
             } for region in regions
         } for sample in samples
     }
     
-    operators = ["sm","cqlm2","cql32","cqe2","cll1221","cpdc","cpwb","cpl2","c3pl1","c3pl2","cpmu","cpqmi","cpq3i","cpq3","cpqm","cpu","cpd"]
-    operators = ["sm","c3pl1", "c3pl2", "cll1221","cpd","cpl2","cpwb","cpu","cpq3i"]
+    # operators = ["sm","cqlm2","cql32","cqe2","cll1221","cpdc","cpwb","cpl2","c3pl1","c3pl2","cpmu","cpqmi","cpq3i","cpq3","cpqm","cpu","cpd"]
+    operators = ["sm", "cpqmi"]
+    #operators = ["sm","c3pl1", "c3pl2", "cll1221","cpd","cpl2","cpwb","cpu","cpq3i"]
     # now add reweighting weights for lin and quad components
     
     # --- single-operator weights ---
@@ -428,7 +414,7 @@ def merge_vars(var_list, samples, regions):
             for region in regions:
                 merged[sample][region]["mll"] += v[sample][region]["mll"]
                 merged[sample][region]["costhetastar_bins"] += v[sample][region]["costhetastar_bins"]
-                merged[sample][region]["yZ_bins"] += v[sample][region]["yZ_bins"]
+                merged[sample][region]["rapll_abs"] += v[sample][region]["rapll_abs"]
                 merged[sample][region]["weight"] += v[sample][region]["weight"]
                 merged[sample][region]["sumw"] += v[sample][region]["sumw"]
                 
@@ -469,20 +455,21 @@ def main():
     regions__ = ["inc_mm"]
     
     samples_to_process = [
-        "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_100_Photos_startingOne",
+        "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_120_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll200_400_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll400_600_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll600_800_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll800_1000_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll1500_inf_Photos_startingOne",
-        "DYMuMu_NLO_EFT_SMEFTatNLO_mll100_200_Photos_startingOne",
+        "DYMuMu_NLO_EFT_SMEFTatNLO_mll120_200_Photos_startingOne",
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos_startingOne",
     ]
     
+    all_files = glob(args.input_dir + "/job_*/chunks_job.pkl")
     if args.max_files == -1:
-        file_path = glob(args.input_dir + "/job_*/chunks_job.pkl")
+        file_path = all_files
     else:
-        file_path = [args.input_dir + f"/job_{i}/chunks_job.pkl" for i in [random.randint(0, 199) for _ in range(0, 200 if args.max_files == -1 else args.max_files)]]
+        file_path = [args.input_dir + f"/job_{i}/chunks_job.pkl" for i in [random.randint(0, len(all_files)) for _ in range(0, len(all_files) if args.max_files == -1 else args.max_files)]]
     print(file_path)
     # var__ = read_inputs_skimmed(file_path, regions__, samples_to_process)
     var__ = read_inputs_skimmed_parallel(file_path, regions__, samples_to_process, n_workers=args.nworkers if len(file_path) > args.nworkers else len(file_path))
@@ -497,14 +484,16 @@ def main():
         (1000,1500): 40,
         (1500,3000): 65,
     }
-
+    # mll, costhetastar, rapll_abs, cpwb_lin
+    #[0 4 3 6]
+    
     costheta_bins = [-1, -0.6, -0.2, 0.2, 0.6, 1]
-    yZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
+    rapll_abs_bins = [0.0, 0.5, 1.0, 2.5]
 
     # var contains your combined data
-    # var = {"mll": [...], "costhetastar_bins": [...], "yZ_bins": [...], "weight": [...]}
+    # var = {"mll": [...], "costhetastar_bins": [...], "rapll_abs": [...], "weight": [...]}
 
-    mll_bins = optimize_mll_binning(var__, costheta_bins, yZ_bins, min_bin_width, region=regions__[0])
+    mll_bins = optimize_mll_binning(var__, costheta_bins, rapll_abs_bins, min_bin_width, region=regions__[0])
     print(f"Optimized mll bins: {list(mll_bins)}")
 
 

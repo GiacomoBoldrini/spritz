@@ -65,12 +65,34 @@ def read_inputs(inputs: list):
             all_chunks.append(job_result)
     return all_chunks
 
+# -----------------------------
+# Utilities
+# -----------------------------
+def initial_mll_binning(min_bin_width):
+    """
+    Build initial fine mll bin edges according to minimum width.
+    """
+    binning = []
+    for (start, stop), width in min_bin_width.items():
+        edges = np.arange(start, stop, width)
+        if len(binning) > 0 and edges[0] == binning[-1]:
+            edges = edges[1:]  # avoid duplicates
+        binning += edges.tolist()
+    # Ensure last edge reaches stop
+    last_stop = list(min_bin_width.keys())[-1][1]
+    if binning[-1] < last_stop:
+        binning.append(last_stop)
+    return np.array(binning)
 #  -----------------------------
 # Cross sections
 #  -----------------------------
 
-def renorm(xs, sumw, lumi):
+def renorm(xs, sumw, lumi, squareit=False):
     scale = xs * 1000 * lumi / sumw
+    if squareit:
+        # if the histo is a variance, need to take square of scale
+        # to scale nominal bin content
+        scale = scale ** 2
     # print(scale)
     return scale
 
@@ -535,8 +557,8 @@ def merge_histos_files_pair(file_pair, out_dir):
         pickle.dump(h1, f, protocol=4)
 
     # Delete input files immediately
-    os.remove(f1)
-    os.remove(f2)
+    #os.remove(f1)
+    #os.remove(f2)
 
     return merged_file
 
@@ -603,13 +625,17 @@ def merge_histos_from_files(file_list, out_dir, nproc=4):
 def scale_samples(histos, lumi):
     for region in histos.keys():
         for operator in histos[region].keys():
+            square=False
+            if operator.endswith("variance"):
+                square=True 
             for var in histos[region][operator].keys():
                 for sample in histos[region][operator][var].keys():
+                    if sample == "all": continue 
                     xs = float(cross_sections[sample]["xsec"])
                     sumw = histos[region][operator][var][sample]["sumw"]
                     scale = 1.0
                     if sumw != 0:
-                        scale = renorm(xs, sumw, lumi)
+                        scale = renorm(xs, sumw, lumi, squareit=square)
                     histos[region][operator][var][sample]["histo"] = histos[region][operator][var][sample]["histo"] * scale
                 
     return histos
@@ -766,21 +792,63 @@ def main():
         "DYMuMu_NLO_EFT_SMEFTatNLO_mll1000_1500_Photos_startingOne",
     ]
 
+    min_bin_width = {
+        (50,100): 2,
+        (100,200): 3,
+        (200,400): 5,
+        (400,600): 10,
+        (600,800): 18,
+        (800,1000): 27,
+        (1000,1500): 40,
+        (1500,3000): 65,
+    }
+    
+    minimal_bin_width = initial_mll_binning(min_bin_width)
+    
     gen_mll_bins = [50, 100, 200, 400, 600, 800, 1000, 1400, 15000]
-    gen_mll_optimized = [50, 92, 94, 96, 98, 106, 112, 160, 265, 275, 295, 315, 430, 440, 450, 460, 480, 490, 500, 510, 520, 540, 560, 580, 600, 636, 672, 708, 744, 800, 908, 3000]
     mll_medium_bins = [50,58,64,72,78,84,90,96,102,108,116,124,132,140,
                 148,156,164,172,180,190,200,210,220,230,240,255,270,285,300,325,350,375,
                 400,450,500]
+    
     costheta_bins = [-1, -0.6, -0.2, 0.2, 0.6, 1]
-    etaZ_bins = [-3.0, -1.5, 0.0, 1.5, 3.0]
+    costheta_bins_optimized = [-1, -0.5, 0.0, 0.5, 1]
+
+    rapll_abs_bins = [0.0, 0.5, 1.0, 1.5, 2.5]
+    rapll_abs_bins_opt = [0.0, 0.5, 1.0, 2.5]
+
+    #gen_mll_optimized = [50, 90, 94, 133, 139, 151, 199, 235, 255, 295, 510, 590, 654, 672, 708, 780, 854, 962, 3000] # 30% on cqe2
+    #gen_mll_optimized = [50, 90, 94, 133, 139, 151, 199, 235, 255, 295, 510, 590, 654, 672, 708, 780, 854, 962, 3000]
+    gen_mll_optimized = [50, 64, 76, 82, 86, 90, 98, 103, 121, 127, 130, 133, 148, 151, 154, 157, 163, 166, 172, 178, 184, 205, 210, 220, 235, 240, 260, 265, 325, 345, 500, 530, 560, 580, 590, 618, 636, 654, 672, 690, 708, 744, 780, 800, 827, 854, 908, 962, 1040, 3000]
+    gen_mll_optimized = [50, 64, 76, 82, 86, 90, 98, 103, 121, 127, 130, 133, 148, 151, 154, 157, 163, 166, 172, 178, 184, 205, 210, 220, 235, 240, 260, 265, 325, 345, 500, 530, 570, 618, 654, 708, 3000]
+    
 
     variables = {
         # "mll": {"binning": (50, 3000, 150), "xaxis": r"$m_{\ell\ell}$ [GeV]"},
+        "mll": {"axis": hist.axis.Variable(minimal_bin_width, name="mll"), "xaxis": r"$m_{\ell\ell}$ [GeV]"},
         # "costhetastar_bins": {"binning": (-1, 1, 50), "xaxis": r"$cos \theta*$ [a.u.]"},
         # "yZ_bins": {"binning": (-5, 5, 50), "xaxis": r"$y_{\ell\ell}$ [a.u.]"},
-        "triple_diff": {"axis": [hist.axis.Variable(gen_mll_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
-        # "triple_diff_medium": {"axis": [hist.axis.Variable(mll_medium_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
-        # "triple_diff_optimized": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(etaZ_bins, name="yZ_bins")], "xaxis": r"Triple diff bin"},
+        #"triple_diff": {"axis": [hist.axis.Variable(gen_mll_bins, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(rapll_abs_bins, name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        "triple_diff_optimized": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable(costheta_bins, name="costhetastar_bins"), hist.axis.Variable(rapll_abs_bins_opt, name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        
+        # "triple_diff_rapll_0_0p5_costheta_m1_m0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-1, -0.5], name="costhetastar_bins"), hist.axis.Variable([0.0, 0.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_0p5_1p0_costheta_m1_m0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-1, -0.5], name="costhetastar_bins"), hist.axis.Variable([0.5, 1.0], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p0_1p5_costheta_m1_m0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-1, 0.5], name="costhetastar_bins"), hist.axis.Variable([1.0, 1.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p5_2p5_costheta_m1_m0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-1, -0.5], name="costhetastar_bins"), hist.axis.Variable([1.5, 2.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # 
+        # "triple_diff_rapll_0_0p5_costheta_m0p5_m0p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.5, -0.0], name="costhetastar_bins"), hist.axis.Variable([0.0, 0.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_0p5_1p0_costheta_m0p5_m0p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.5, -0.0], name="costhetastar_bins"), hist.axis.Variable([0.5, 1.0], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p0_1p5_costheta_m0p5_m0p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.5, 0.0], name="costhetastar_bins"), hist.axis.Variable([1.0, 1.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p5_2p5_costheta_m0p5_m0p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.5, -0.0], name="costhetastar_bins"), hist.axis.Variable([1.5, 2.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # 
+        # "triple_diff_rapll_0_0p5_costheta_m0p0_0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.0, 0.5], name="costhetastar_bins"), hist.axis.Variable([0.0, 0.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_0p5_1p0_costheta_m0p0_0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.0, 0.5], name="costhetastar_bins"), hist.axis.Variable([0.5, 1.0], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p0_1p5_costheta_m0p0_0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.0, 0.5], name="costhetastar_bins"), hist.axis.Variable([1.0, 1.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p5_2p5_costheta_m0p0_0p5": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([-0.0, 0.5], name="costhetastar_bins"), hist.axis.Variable([1.5, 2.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # 
+        # "triple_diff_rapll_0_0p5_costheta_0p5_1p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([0.5, 1.0], name="costhetastar_bins"), hist.axis.Variable([0.0, 0.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_0p5_1p0_costheta_0p5_1p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([0.5, 1.0], name="costhetastar_bins"), hist.axis.Variable([0.5, 1.0], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p0_1p5_costheta_0p5_1p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([0.5, 1.0], name="costhetastar_bins"), hist.axis.Variable([1.0, 1.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
+        # "triple_diff_rapll_1p5_2p5_costheta_0p5_1p0": {"axis": [hist.axis.Variable(gen_mll_optimized, name="mll"), hist.axis.Variable([0.5, 1.0], name="costhetastar_bins"), hist.axis.Variable([1.5, 2.5], name="rapll_abs")], "xaxis": r"Triple diff bin"},
     }
 
     # Load LHE reweight JSON
