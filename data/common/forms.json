@@ -242,7 +242,11 @@
             "branches": [],
             "with_name": null
         },
-	"LHEReweightingWeight": {
+	    "LHEReweightingWeight": {
+            "branches": [],
+            "with_name": null
+        },
+        "nLHEReweightingWeight": {
             "branches": [],
             "with_name": null
         },
