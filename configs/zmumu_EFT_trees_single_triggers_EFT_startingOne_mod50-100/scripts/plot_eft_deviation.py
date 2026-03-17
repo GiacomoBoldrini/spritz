@@ -154,7 +154,7 @@ def plot_sm_hist_worker(args):
     plt.ylabel("X / SM")
     if "logx" in variables[var] and variables[var]["logx"]: plt.xscale("log")
     plt.xlim(bin_edges[0], bin_edges[-1])
-    plt.ylim(0.8, 1.2)
+    plt.ylim(0.98, 1.02)
     hep.cms.label(ax=plt.gca(), year=2018, com=13, data=False)
 
     # --- Save figure ---

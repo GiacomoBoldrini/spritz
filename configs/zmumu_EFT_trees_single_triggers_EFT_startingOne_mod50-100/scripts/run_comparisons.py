@@ -10,7 +10,7 @@ ranges = {
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.3,0.3"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.3,0.3"
         }
@@ -20,7 +20,7 @@ ranges = {
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.05,0.05"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.05,0.05"
         }
@@ -30,7 +30,7 @@ ranges = {
             "MCstat": "-2,2",
             "noMCstat": "-1,1"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-2,2",
             "noMCstat": "-1,1"
         }
@@ -40,7 +40,7 @@ ranges = {
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.5,0.5"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.5,0.5"
         }
@@ -50,7 +50,7 @@ ranges = {
             "MCstat": "-0.8,0.8",
             "noMCstat": "-0.5,0.5"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.8,0.8",
             "noMCstat": "-0.5,0.5"
         }
@@ -60,7 +60,7 @@ ranges = {
             "MCstat": "-0.6,0.4",
             "noMCstat": "-0.4,0.3"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.6,0.4",
             "noMCstat": "-0.4,0.3"
         }
@@ -70,7 +70,7 @@ ranges = {
             "MCstat": "-0.3,0.2",
             "noMCstat": "-0.3,0.2"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.3,0.2",
             "noMCstat": "-0.3,0.2"
         }
@@ -80,7 +80,7 @@ ranges = {
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.1,0.1"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.1,0.1"
         }
@@ -90,7 +90,7 @@ ranges = {
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.5,0.5"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.5,0.5"
         }
@@ -100,7 +100,7 @@ ranges = {
             "MCstat": "-1,1",
             "noMCstat": "-0.5,0.5"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-1,1",
             "noMCstat": "-0.5,0.5"
         }
@@ -110,7 +110,7 @@ ranges = {
             "MCstat": "-0.1,0.1",
             "noMCstat": "-0.05,0.05"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.1,0.1",
             "noMCstat": "-0.05,0.05"
         }
@@ -120,7 +120,7 @@ ranges = {
             "MCstat": "-0.6,0.6",
             "noMCstat": "-0.6,0.6"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.6,0.6",
             "noMCstat": "-0.6,0.6"
         }
@@ -130,7 +130,7 @@ ranges = {
             "MCstat": "-0.06,0.06",
             "noMCstat": "-0.03,0.03"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.06,0.06",
             "noMCstat": "-0.03,0.03"
         }
@@ -140,7 +140,7 @@ ranges = {
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.3,0.3"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.5,0.5",
             "noMCstat": "-0.3,0.3"
         }
@@ -150,7 +150,7 @@ ranges = {
             "MCstat": "-0.1,0.1",
             "noMCstat": "-0.05,0.05"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.1,0.1",
             "noMCstat": "-0.05,0.05"
         }
@@ -160,7 +160,7 @@ ranges = {
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.08,0.08"
         },
-        "triple_diff_optimized":{
+        "triple_diff":{
             "MCstat": "-0.2,0.2",
             "noMCstat": "-0.08,0.08"
         }

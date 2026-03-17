@@ -6,7 +6,8 @@
 # ---------------------------
 
 # CERN username (auto-detect from $USER)
-USER_NAME="${USER}"
+# USER_NAME="${USER}"
+USER_NAME=gboldrin
 
 # Base output directory (default: your EOS space)
 BASE_DIR="/eos/user/${USER_NAME:0:1}/${USER_NAME}"
@@ -17,6 +18,9 @@ IMAGE_NAME="spritz-env"
 # Output paths
 SIF_PATH="${BASE_DIR}/${IMAGE_NAME}.sif"
 TAR_PATH="${BASE_DIR}/${IMAGE_NAME}.tar"
+
+echo $SIF_PATH
+echo $TAR_PATH
 
 # Optional: Apptainer cache dir (using EOS by default)
 export APPTAINER_CACHEDIR="${BASE_DIR}/apptainer-cache"
