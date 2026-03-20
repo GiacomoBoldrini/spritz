@@ -10,7 +10,7 @@
 USER_NAME=gboldrin
 
 # Base output directory (default: your EOS space)
-BASE_DIR="/eos/user/${USER_NAME:0:1}/${USER_NAME}"
+BASE_DIR="/eos/user/${USER_NAME:0:1}/${USER_NAME}/prova"
 
 # Docker image name
 IMAGE_NAME="spritz-env"

@@ -1,6 +1,7 @@
 #!/usr/bin/env -S docker build . --tag=gpizzati/spritz:latest --file
 
 FROM gitlab-registry.cern.ch/linuxsupport/alma9-base:latest
+ADD docker-files/batch9-stable.repo /etc/yum.repos.d/
 
 # Update system and install dev tools
 RUN dnf -y update && dnf clean all
@@ -9,10 +10,43 @@ RUN dnf install -y dnf-plugins-core \
  && dnf config-manager --set-enabled crb \
  && dnf clean all
 
-RUN dnf config-manager --set-enabled crb && \
-    dnf -y --allowerasing --skip-broken install \
-        gcc gcc-c++ cmake git make curl wget bzip2 which tar --exclude=openssh && \
+
+#RUN dnf config-manager --set-enabled crb && \
+#    dnf -y --allowerasing --skip-broken install \
+#    myschedd krb5-workstation ngbauth-submit perl-Sys-Syslog gcc gcc-c++ cmake git make curl wget bzip2 which tar --exclude=openssh && \
+#    dnf clean all
+
+# STEP 5: Installazione corretta senza esclusioni conflittuali
+RUN echo "INSTALLAZIONE BATCH" && \
+    dnf install -y epel-release && \
+    /usr/bin/crb enable && \
+    # 1. Creazione manuale del file repository per HTCondor 10.x
+    echo "[htcondor]" > /etc/yum.repos.d/htcondor.repo && \
+    echo "name=HTCondor Stable" >> /etc/yum.repos.d/htcondor.repo && \
+    echo "baseurl=https://research.cs.wisc.edu/htcondor/repo/10.x/el9/x86_64/release" >> /etc/yum.repos.d/htcondor.repo && \
+    echo "enabled=1" >> /etc/yum.repos.d/htcondor.repo && \
+    echo "gpgcheck=0" >> /etc/yum.repos.d/htcondor.repo && \
+    # 2. Installazione completa (senza --exclude=openssh)
+    dnf -y --allowerasing install \
+     myschedd \
+     condor \
+     krb5-workstation \
+     ngbauth-submit \
+     perl-Sys-Syslog \
+     gcc gcc-c++ cmake git make curl wget bzip2 which tar && \
     dnf clean all
+
+# CRUCIALE: Condor ha bisogno di queste cartelle per funzionare su LXPLUS/Singularity
+RUN mkdir -p /var/lib/condor/spool /var/log/condor /var/lock/condor && \
+    chmod -R 777 /var/lib/condor /var/log/condor /var/lock/condor
+
+ADD docker-files/ngauth_batch_crypt_pub.pem /etc/
+ADD docker-files/ngbauth-submit /etc/sysconfig/
+ADD docker-files/myschedd.yaml /etc/myschedd/
+# we need a functional krb5.conf and this one comes from ngbauth-submit
+RUN rm -f /etc/krb5.conf
+RUN ln -s /etc/krb5.conf.no_rdns /etc/krb5.conf
+
 
 # Install Mambaforge (better than Miniforge for speed)
 WORKDIR /tmp
@@ -25,19 +59,16 @@ RUN curl -sSL "https://github.com/conda-forge/miniforge/releases/download/23.3.1
 # Activate toolset, build conda env
 COPY env.yaml env.yaml
 
-RUN mamba create -n spritz --file env.yaml --yes && \
+RUN mamba create -n spritz --file env.yaml --yes --no-pin && \
     source /usr/local/etc/profile.d/conda.sh && \
     conda activate spritz && \
+    # Installiamo setuptools vecchio PRIMA di tutto il resto
+    pip install "setuptools<70" && \
+    # Ora installiamo rucio e gli altri SENZA isolamento, così usano il setuptools sopra
+    PIP_NO_BUILD_ISOLATION=0 pip install --no-cache-dir rucio-clients==35.5.0 && \
     pip install --no-cache-dir correctionlib git+https://github.com/giorgiopizz/correctionlib && \
     echo "Done installing packages"
-    # mamba clean --all -f -y
 
-# VOMS / grid setup
-RUN mkdir -p /usr/local/etc/grid-security && \
-    ln -s /usr/local/etc/grid-security /etc/grid-security && \
-    curl -L https://github.com/opensciencegrid/osg-vo-config/archive/refs/heads/master.tar.gz | \
-    tar -xz --strip-components=1 --directory=/usr/local/etc/grid-security --wildcards "*/vomses" "*/vomsdir" && \
-    mv /usr/local/etc/grid-security/vomses /etc
 
 # ==========================
 # Install spritz package
@@ -77,6 +108,34 @@ RUN chmod +x /opt/spritz/start.sh
 
 # Source start.sh for every interactive shell
 RUN echo "source /opt/spritz/start.sh" >> /etc/bash.bashrc
+
+# ==========================
+# VOMS configuration
+# ==========================
+
+RUN echo "START VOMS" && mkdir -p /etc/grid-security /usr/local/etc/grid-security && \
+    curl -sL https://github.com/opensciencegrid/osg-vo-config/archive/refs/heads/master.tar.gz -o /tmp/osg.tar.gz && \
+    mkdir -p /tmp/osg-unpacked && \
+    tar -xzf /tmp/osg.tar.gz -C /tmp/osg-unpacked --strip-components=1 && \
+    cp -r /tmp/osg-unpacked/vomsdir /etc/grid-security/ && \
+    if [ -e /tmp/osg-unpacked/vomses ]; then cp -r /tmp/osg-unpacked/vomses /etc/; fi && \
+    ln -sf /etc/grid-security /usr/local/etc/grid-security && \
+    rm -rf /tmp/osg.tar.gz /tmp/osg-unpacked
+
+# ==========================
+# Condor configuration
+# ==========================
+
+WORKDIR /
+
+RUN mkdir -p /usr/local/etc/condor/config.d
+ADD docker-files/condor_submit.config /usr/local/etc/condor/config.d/
+
+# but config still looked for in /etc/condor for some reason
+RUN mkdir -p /etc/condor/
+ADD docker-files/condor_config /etc/condor/
+RUN mkdir -p /etc/condor/config.d
+ADD docker-files/condor_submit.config /etc/condor/config.d/
 
 # ==========================
 # Final configuration
