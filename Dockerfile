@@ -16,36 +16,17 @@ RUN dnf install -y dnf-plugins-core \
 #    myschedd krb5-workstation ngbauth-submit perl-Sys-Syslog gcc gcc-c++ cmake git make curl wget bzip2 which tar --exclude=openssh && \
 #    dnf clean all
 
-# STEP 5: Installazione corretta senza esclusioni conflittuali
-RUN echo "INSTALLAZIONE BATCH" && \
+# STEP 5: Pulizia Totale - Installiamo solo il minimo indispensabile
+RUN echo "INSTALLAZIONE MINIMALE" && \
     dnf install -y epel-release && \
     /usr/bin/crb enable && \
-    # 1. Creazione manuale del file repository per HTCondor 10.x
-    echo "[htcondor]" > /etc/yum.repos.d/htcondor.repo && \
-    echo "name=HTCondor Stable" >> /etc/yum.repos.d/htcondor.repo && \
-    echo "baseurl=https://research.cs.wisc.edu/htcondor/repo/10.x/el9/x86_64/release" >> /etc/yum.repos.d/htcondor.repo && \
-    echo "enabled=1" >> /etc/yum.repos.d/htcondor.repo && \
-    echo "gpgcheck=0" >> /etc/yum.repos.d/htcondor.repo && \
-    # 2. Installazione completa (senza --exclude=openssh)
+    # Installiamo i compilatori ma ESCLUDIAMO git e condor che tirano dentro SSH
     dnf -y --allowerasing install \
-     myschedd \
-     condor \
      krb5-workstation \
-     ngbauth-submit \
      perl-Sys-Syslog \
-     gcc gcc-c++ cmake git make curl wget bzip2 which tar && \
+     gcc gcc-c++ cmake make curl wget bzip2 which tar \
+     --exclude=openssh* --exclude=git* && \
     dnf clean all
-
-# CRUCIALE: Condor ha bisogno di queste cartelle per funzionare su LXPLUS/Singularity
-RUN mkdir -p /var/lib/condor/spool /var/log/condor /var/lock/condor && \
-    chmod -R 777 /var/lib/condor /var/log/condor /var/lock/condor
-
-ADD docker-files/ngauth_batch_crypt_pub.pem /etc/
-ADD docker-files/ngbauth-submit /etc/sysconfig/
-ADD docker-files/myschedd.yaml /etc/myschedd/
-# we need a functional krb5.conf and this one comes from ngbauth-submit
-RUN rm -f /etc/krb5.conf
-RUN ln -s /etc/krb5.conf.no_rdns /etc/krb5.conf
 
 
 # Install Mambaforge (better than Miniforge for speed)

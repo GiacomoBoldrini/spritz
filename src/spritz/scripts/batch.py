@@ -129,7 +129,7 @@ def submit(
     txtjdl += "arguments = $(Folder)\n"
     txtjdl += "MY.SingularityImage = \"/eos/user/g/gboldrin/spritz-env.sif\"\n" 
     txtjdl += "should_transfer_files = YES\n"
-    txtjdl += f"transfer_input_files = {os.environ["X509_USER_PROXY"]}, $(Folder)/chunks_job.pkl, "
+    txtjdl += f"transfer_input_files = {os.environ['X509_USER_PROXY']}, $(Folder)/chunks_job.pkl, "
     txtjdl += f" runner.py, {get_fw_path()}/data/{an_dict['year']}/cfg.json, {path_an}/config.py\n"
     txtjdl += 'transfer_output_remaps = "results.pkl = $(Folder)/chunks_job.pkl"\n'
     txtjdl += "output = $(Folder)/out.txt\n"
