@@ -11,6 +11,7 @@ import awkward as ak
 import cloudpickle
 import numpy as np
 import uproot
+from matplotlib.colors import LinearSegmentedColormap, to_hex
 
 
 def get_fw_path():
@@ -324,7 +325,32 @@ def write_chunks(d, filename, readable=False):
             json.dump(d, file)
 
 
-# plots
+def interpolate_colors(base_colors, n_colors):
+    """
+    Interpolate a list of hex colors.
+
+    Parameters
+    ----------
+    base_colors : list[str]
+        List of hex colors, e.g. ["#ff0000", "#00ff00"]
+    n_colors : int
+        Number of output colors requested
+
+    Returns
+    -------
+    list[str]
+        Interpolated hex colors
+    """
+
+    cmap = LinearSegmentedColormap.from_list(
+        "custom_cmap",
+        base_colors,
+        N=n_colors,
+    )
+
+    return [to_hex(cmap(i / (n_colors - 1))) for i in range(n_colors)]
+
+
 cmap_petroff = [
     "#5790fc",
     "#f89c20",
@@ -333,6 +359,7 @@ cmap_petroff = [
     "#9c9ca1",
     "#7a21dd",
 ]
+
 cmap_pastel = [
     "#A1C9F4",
     "#FFB482",

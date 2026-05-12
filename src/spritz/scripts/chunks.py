@@ -32,6 +32,7 @@ def create_chunks(datasets):
     for dataset in datasets:
         is_data = datasets[dataset].get("is_data", False)
         max_chunks = datasets[dataset].get("max_chunks", None)
+        neft = datasets[dataset].get("neft", None)
         files = datasets[dataset]["files"]
         dataset_dict = {
             k: v
@@ -50,6 +51,7 @@ def create_chunks(datasets):
                         "filenames": replicas,
                         "start": start,
                         "stop": stop,
+                        "neft": neft,
                         **dataset_dict,
                     },
                     "error": "",

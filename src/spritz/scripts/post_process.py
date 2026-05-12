@@ -175,6 +175,8 @@ def single_post_process(results, region, variable, weight, samples, xss, nuisanc
     dout = {}
     for histoName in samples:
         for sample in samples[histoName]["samples"]:
+            #print(results)
+            #sys.exit(0)
             try:
                 results[sample]["histos"][variable]
             except KeyError:
@@ -341,7 +343,7 @@ def main():
             xss[flat_dataset] = eval(samples_xs["samples"][key]["xsec"])
 
     print(xss)
-    file__ = f"{get_batch_cfg()["BATCH_SYSTEM"]}/results_merged_new.pkl"
+    file__ = f"{get_batch_cfg()['BATCH_SYSTEM']}/results_merged_new.pkl"
     if len(sys.argv) > 1:
         file__ = sys.argv[1]
 

@@ -352,6 +352,12 @@ def plot(
         pad_inches=0.1,
         bbox_inches="tight",
     )
+    fig.savefig(
+        f"plots/{region}_{variable}.pdf",
+        facecolor="white",
+        pad_inches=0.1,
+        bbox_inches="tight",
+    )
 
     plt.close()
 
@@ -439,6 +445,12 @@ def plot(
 
         fig.savefig(
             f"plots/corrections/{region}_{variable}_{weight}.png",
+            facecolor="white",
+            pad_inches=0.1,
+            bbox_inches="tight",
+        )
+        fig.savefig(
+            f"plots/corrections/{region}_{variable}_{weight}.pdf",
             facecolor="white",
             pad_inches=0.1,
             bbox_inches="tight",

@@ -237,7 +237,7 @@ def process_folder(args):
 
             cmd = (
                 f'mkEFTScan.py {fn[0]} -ml "{fn[0].split("/")[0]}" '
-                + "-p " + " ".join(["k_" + i for i in ops]) + " -others "
+                + "-p " + " ".join(["k_" + i for i in ops]) + " -ff png pdf root -others "
             )
 
             for idx, f in enumerate(fn[1:]):

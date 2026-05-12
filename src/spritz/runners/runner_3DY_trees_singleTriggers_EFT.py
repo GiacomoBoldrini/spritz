@@ -97,6 +97,7 @@ def process(events, **kwargs):
     era = kwargs.get("era", None)
     isData = kwargs.get("is_data", False)
     subsamples = kwargs.get("subsamples", {})
+    neft = kwargs.get("neft", False)
     special_weight = eval(kwargs.get("weight", "1.0"))
 
     print("SumW and NEvents before cuts")
@@ -111,14 +112,17 @@ def process(events, **kwargs):
         events["weight"] = ak.ones_like(events.run)
     else:
         events["weight"] = events.genWeight
-    if "EFT" in kwargs.keys() and kwargs["EFT"] :
-        neft_rwgts = kwargs["EFT"]
-        print("neft_rwgts--> ", neft_rwgts)
-        events = events[ak.num(events.LHEReweightingWeight) == neft_rwgts]
+    if neft:
+        print("neft_rwgts -->", neft)
+        events["rwgt"] = events.LHEReweightingWeight[:, :neft]
         events["rwgt"] = ak.pad_none(
-            events.LHEReweightingWeight, neft_rwgts, clip=True, axis=1
+            events["rwgt"],
+            neft,
+            clip=True,
+            axis=1,
         )
-        events["rwgt"] = ak.fill_none(events.rwgt, 0.0)
+        events["rwgt"] = ak.fill_none(events["rwgt"], 0.0)
+        
     if isData:
         lumimask = LumiMask(cfg["lumiMask"])
         events = lumi_mask(events, lumimask)
