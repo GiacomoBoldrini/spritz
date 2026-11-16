@@ -47,25 +47,34 @@ def eft_cov_key(dataset):
 def to_numpy(array, fill_value):
     return np.ma.filled(ak.to_numpy(array), fill_value).astype(np.float64)
 
-def fill_histos(histos, weights, events, regions, variables, variation, mask=None):
+def fill_histos(histos, weights, events, regions, variables, variation, mask=None, is_data=False):
     if mask is None:
         mask = ak.ones_like(events.run)==1.0
 
     for region in regions:
-        mask_ = regions[region]["mask"] & mask
-        nevents_sel = ak.sum(mask_)
-        if nevents_sel == 0:
+        mask_region = regions[region]["mask"] & mask
+        if ak.sum(mask_region) == 0:
             continue
 
-        weights_sel = weights[mask_]
-
         for variable in histos:
+            if "mask" in variables[variable]:
+                mask_variable = mask_region & variables[variable]["mask"](events)
+            else:
+                mask_variable = mask_region
+            if is_data and variables[variable].get("blind_data"):
+                mask_variable = mask_variable & ((events.mll < 500) | (events.mm_ss))
+
+            nevents_sel = ak.sum(mask_variable)
+            if nevents_sel == 0:
+                continue
+
             if isinstance(variables[variable]["axis"], list):
                 var_names = [k.name for k in variables[variable]["axis"]]
             else:
                 var_names = [variables[variable]["axis"].name]
             
-            vals = {vn: events[vn][mask_] for vn in var_names}
+            vals = {vn: events[vn][mask_variable] for vn in var_names}
+            weights_sel = weights[mask_variable]
 
             histos[variable].fill(
                 **vals, category=region, syst=variation, weight=weights_sel,
@@ -103,9 +112,9 @@ def eft_point_weights(events, eft_reweighting):
 
 # Columns that reuse the nominal selection and only recompute the weight
 WEIGHT_COLUMNS = {
-    "weight", "puWeight", "prefireWeight", "TriggerSF", "topPtWeight", "H2ErratumWeight",
-    ("Lepton", "RecoSF"), ("Lepton", "IdSF"), ("Lepton", "IsoSF"),
-    ("Jet", "btagSF"), ("Jet", "puidSF"),
+    "weight", "puWeight", "prefireWeightMuon", "prefireWeightECAL", "TriggerSF", 
+    "topPtWeight", "H2ErratumWeight", ("Lepton", "RecoSF"), ("Lepton", "IdSF"), 
+    ("Lepton", "IsoSF"), ("Jet", "btagSF"), ("Jet", "puidSF"),
 }
 
 def declared_kinematic(analysis_cfg):
@@ -577,7 +586,8 @@ def process(events, **kwargs):
             events["weight"] = (
                 events.weight
                 * events.puWeight
-                * events.prefireWeight
+                * events.prefireWeightMuon
+                * events.prefireWeightECAL
                 * events.RecoSF
                 * events.IdSF
                 * events.IsoSF
@@ -606,7 +616,7 @@ def process(events, **kwargs):
         # datasets without subsamples or eft_reweighting
         if dataset in results:
             fill_histos(
-                results[dataset]["histos"], events.weight, events, regions, variables, variation
+                results[dataset]["histos"], events.weight, events, regions, variables, variation, is_data=isData
             )
 
         # datasets with subsamples
@@ -631,7 +641,7 @@ def process(events, **kwargs):
 
                 fill_histos(
                     results[f"{dataset}_{subsample}"]["histos"], subsample_weight, 
-                    events, regions, variables, variation, mask=subsample_mask
+                    events, regions, variables, variation, mask=subsample_mask, is_data=isData
                 )
 
         # datasets with eft_reweighting
