@@ -278,7 +278,16 @@
       "ref": "D"
     },
     "DYMuMu_NLO_EFT_SMEFTatNLO_mll50_120_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/260722_071838",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/260722_071838",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261016_103858",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261016_103909",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261022_150851",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261022_150907",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261022_150920",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261022_150934",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr//store/user/gboldrin/3DY_SMEFTsim_NLO/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTatNLO_mll_50_120_Photos/261022_150950"
+      ],
       "xsec": "1912.8516"
     },
     "DYMuMu_NLO_EFT_SMEFTatNLO_mll120_200_Photos_startingOne": {
@@ -310,72 +319,140 @@
       "xsec": "0.00086687414"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll50_120_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/260829_084312",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/260829_084312",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/261010_145813",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_50_120_Photos/261016_104221"
+      ],
       "xsec": "1186"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll120_200_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/260829_084317",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/260829_084317",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_120_200_Photos/261010_145751"
+      ],
       "xsec": "13.2"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll200_400_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/260829_084322",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/260829_084322",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/261010_145759",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_200_400_Photos/261016_104232"
+      ],
       "xsec": "4.291"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll400_600_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/260829_084327",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/260829_084327",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_400_600_Photos/261016_104242"
+      ],
       "xsec": "2.075"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll600_800_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/260829_084332",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/260829_084332",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/261010_145821",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_600_800_Photos/261016_104253"
+      ],
       "xsec": "1.569"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll800_1000_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/260829_084337",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/260829_084337",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/261010_145829",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_800_1000_Photos/261016_104308"
+      ],
       "xsec": "1.244"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_mll1000_3000_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/260829_084342",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/260829_084342",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/261010_145745",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_mll_1000_3000_Photos/261016_104319"
+      ],
       "xsec": "4.196"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll50_120_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/260829_084348",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/260829_084348",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/261010_145825",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_50_120_Photos/261016_104201"
+      ],
       "xsec": "1085"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll120_200_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/260829_084353",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/260829_084353",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/261010_145803",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_120_200_Photos/261016_104212"
+      ],
       "xsec": "13.2"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll200_400_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/260829_084358",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/260829_084358",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/261010_145810",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_200_400_Photos/261016_104223"
+      ],
       "xsec": "4.291"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll400_600_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/260911_101236",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/260911_101236",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_400_600_Photos/261016_104234"
+      ],
       "xsec": "2.075"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll600_800_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/260911_101224",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/260911_101224",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/261010_145833",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_600_800_Photos/261016_104245"
+      ],
       "xsec": "1.569"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll800_1000_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/260911_101230",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/260911_101230",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/261010_145840",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_800_1000_Photos/261016_104255"
+      ],
       "xsec": "1.244"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_mll1000_3000_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/260829_084419",
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/260829_084419",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/261010_145757",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_mll_1000_3000_Photos/261016_104310"
+      ],
       "xsec": "4.196"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_1j_mll50_120_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/260929_163502",
-      "xsec": "1239"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/260929_163502",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151226",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151245",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151300",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151317",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151332",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_50_120_Photos/261022_151344"
+      ],
+      "xsec": "1232.1"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_1j_mll120_200_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/260929_163507",
-      "xsec": "13.31"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/260929_163507",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_120_200_Photos/261022_151356"
+      ],
+      "xsec": "13.68"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_1j_mll200_400_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/260929_163513",
-      "xsec": "4.192"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/260929_163513",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/261022_151410",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_200_400_Photos/261022_151421"
+      ],
+      "xsec": "4.397"
     },
     "DYMuMu_LO_EFT_SMEFTsim_no_propcorr_1j_mll400_600_Photos_startingOne": {
       "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_no_propcorr_1j_mll_400_600_Photos/260929_163518",
@@ -394,16 +471,31 @@
       "xsec": "4.668"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_1j_mll50_120_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/260929_163900",
-      "xsec": "1159"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/260929_163900",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151255",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151310",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151330",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151345",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151357",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_50_120_Photos/261022_151410"
+      ],
+      "xsec": "1123.9"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_1j_mll120_200_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/260929_163905",
-      "xsec": "13.66"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/260929_163905",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_120_200_Photos/261022_151421"
+      ],
+      "xsec": "13.63"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_1j_mll200_400_Photos_startingOne": {
-      "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/260929_163910",
-      "xsec": "4.518"
+      "path": [
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/260929_163910",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/261022_151436",
+        "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_200_400_Photos/261022_151449"
+      ],
+      "xsec": "4.380"
     },
     "DYMuMu_LO_EFT_SMEFTsim_propcorr_1j_mll400_600_Photos_startingOne": {
       "path": "root://eos.grif.fr:1094//eos/grif/cms/llr/store/user/gboldrin/3DY_SMEFTsim_LO/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_400_600_Photos/ZDYEFT-nanoaod17_SMEFTsim_LO_propcorr_1j_mll_400_600_Photos/260929_163915",
