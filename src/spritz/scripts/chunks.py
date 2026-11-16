@@ -6,23 +6,32 @@ from math import ceil
 import uproot
 import numpy as np
 
-from spritz.framework.framework import get_analysis_dict, write_chunks
+from spritz.framework.framework import get_analysis_dict, get_fw_path, write_chunks
 
 EXCLUDED_FILES_PATH = "excluded_files.json"
 DEFAULT_CHUNK_SIZE = 100_000
 
 
-def load_excluded_paths(path=EXCLUDED_FILES_PATH):
-    """Optional, per-config list of known-bad raw file paths to drop before
-    ever building a chunk for them (e.g. files a survey found with a
-    corrupted/incomplete reweight branch) -- a no-op for any config that
-    doesn't have this file. Format: [{"path": "root://...", ...}, ...] (extra
-    keys, e.g. why a path is excluded, are ignored here)."""
-    if not os.path.isfile(path):
-        return set()
-    with open(path) as file:
-        entries = json.load(file)
-    return {e["path"] for e in entries}
+def global_excluded_files_path(era):
+    """Era-wide skip list, kept next to samples.json so every config of
+    that era uses it without copying it around."""
+    return f"{get_fw_path()}/data/{era}/samples/excluded_files.json"
+
+
+def load_excluded_paths(paths=(EXCLUDED_FILES_PATH,)):
+    """Raw file paths to drop before ever building a chunk for them: the union
+    of the given lists, by default the era-wide data/<era>/samples/excluded_files.json
+    (see get_files) and the optional per-config excluded_files.json. Typical
+    entries are files a survey found with a corrupted/incomplete reweight
+    branch, or files that repeat the events of another production of the same
+    sample. A missing list is a no-op. Format: [{"path": "root://...", ...}, ...]
+    (extra keys, e.g. why a path is excluded, are ignored here)."""
+    excluded = set()
+    for path in paths:
+        if path and os.path.isfile(path):
+            with open(path) as file:
+                excluded |= {e["path"] for e in json.load(file)}
+    return excluded
 
 
 def split_chunks(num_entries, chunksize=DEFAULT_CHUNK_SIZE):
@@ -37,11 +46,13 @@ def split_chunks(num_entries, chunksize=DEFAULT_CHUNK_SIZE):
     return file_results
 
 
-def get_files(datasets):
+def get_files(datasets, era=None):
     with open("data/fileset.json", "r") as file:
         files = json.load(file)
 
-    excluded = load_excluded_paths()
+    excluded = load_excluded_paths(
+        [global_excluded_files_path(era) if era else None, EXCLUDED_FILES_PATH]
+    )
     n_dropped = 0
     for dataset in datasets:
         dataset_files = files[datasets[dataset]["files"]]["files"]
@@ -51,7 +62,7 @@ def get_files(datasets):
             dataset_files = kept
         datasets[dataset]["files"] = dataset_files
     if excluded:
-        print(f"excluded_files.json: dropped {n_dropped} of {len(excluded)} listed files "
+        print(f"excluded_files.json (era-wide + config): dropped {n_dropped} of {len(excluded)} listed files "
               f"({len(excluded) - n_dropped} listed paths were not found in data/fileset.json)")
     return datasets
 
@@ -134,8 +145,8 @@ def get_args():
 
 def main():
     args = get_args()
-    datasets = get_analysis_dict()["datasets"]
-    datasets = get_files(datasets)
+    an_dict = get_analysis_dict()
+    datasets = get_files(an_dict["datasets"], an_dict.get("year"))
     chunks = create_chunks(datasets, args.chunk_size)
     print("Now got", len(chunks), "chunks")
     write_chunks(chunks, "data/chunks.pkl")

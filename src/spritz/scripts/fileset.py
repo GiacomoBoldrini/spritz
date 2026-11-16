@@ -91,18 +91,25 @@ def process_file(args, attempts=3):
 def production_paths(sample):
     """Directories to search for the files of a "path" sample of samples.json.
     "path" is one production directory (CRAB-like .../<timestamp>, with
-    0000/, 0001/, ... inside), or, with "timestamps", the directory that
-    holds several productions of the same sample (e.g. the original one and
-    an extension), of which only the listed ones are used:
+    0000/, 0001/, ... inside), or a list of them, e.g. the original
+    production and its extensions, whose files are all used:
+        "path": [".../ZDYEFT-..._mll_200_400_Photos/260829_084513",
+                 ".../ZDYEFT-..._mll_200_400_Photos/261016_104346"]
+    With "timestamps", each "path" is instead the directory that holds
+    several productions of the same sample, of which only the listed ones
+    are used:
         "path": ".../ZDYEFT-..._mll_200_400_Photos/ZDYEFT-..._mll_200_400_Photos",
-        "timestamps": ["260829_084513", "261009_071344"]"""
-    path = sample["path"]
+        "timestamps": ["260829_084513", "261016_104346"]"""
+    paths = sample["path"]
+    if isinstance(paths, str):
+        paths = [paths]
     timestamps = sample.get("timestamps")
-    if not timestamps:
-        return [path]
-    if isinstance(timestamps, str):
-        timestamps = [timestamps]
-    return [f"{path.rstrip('/')}/{timestamp}" for timestamp in timestamps]
+    if timestamps:
+        if isinstance(timestamps, str):
+            timestamps = [timestamps]
+        paths = [f"{path.rstrip('/')}/{timestamp}" for path in paths for timestamp in timestamps]
+    # the same production listed twice would count its files twice
+    return list(dict.fromkeys(paths))
 
 
 def discover_files(era, active_samples):
@@ -138,6 +145,7 @@ def discover_files(era, active_samples):
                 else:
                     found_files += glob.glob(path)
 
+            found_files = list(dict.fromkeys(found_files))
             print(sampleName, f"({len(found_files)} files found)")
             files[sampleName] = {"files": found_files}
 
