@@ -229,12 +229,12 @@ def get_yrange(ax, ylog, is_ratio, variable_binwidth, more_space=False):
         ymin, ymax = 1-ylim, 1+ylim
     elif ylog:
         if variable_binwidth:
-            ymin = max(1e-1, 0.5*ymin)
+            ymin = max(1e-3, 0.5*ymin)
         else:
             ymin = max(1, 0.5*ymin)
         ymax = ymax * 10**((oom(ymax)-oom(ymin))/4)
         if more_space:
-            ymin, ymax = ymin/10, 50*ymax
+            ymin, ymax = ymin/100, 50*ymax
     else:
         ymin = 0
         ymax = ymax + ymax/5

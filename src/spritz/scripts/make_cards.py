@@ -127,6 +127,9 @@ def make_datacard(
                 enable_stat = True
                 continue
 
+            if nuisances[systematic]["type"] == "group":
+                continue
+
             if nuisances[systematic]["type"] == "rateParam":
                 if (
                     "samples" in nuisances[systematic]

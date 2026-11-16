@@ -77,6 +77,7 @@ class Histogram(object):
     def load_nuisance(directory, sample, tag, nuisance, nominal):
         name, samples = nuisance.get("name"), nuisance.get("samples")
         type, kind = nuisance.get("type"), nuisance.get("kind")
+        value = nuisance.get("value", 1.)
 
         data, variations = list(), list()
 
@@ -87,7 +88,7 @@ class Histogram(object):
             for i,var in enumerate(nuisance["variations"]):
                 #variations.append(var["label"])
                 variations.append(f"{name}_{i}")
-                data.append(directory[f"histo_{sample}_{name}_{i}"].values()-nominal)
+                data.append(value * (directory[f"histo_{sample}_{name}_{i}"].values()-nominal))
 
         elif kind in ["weight", "suffix", "hessian", "mirror", "updown"] and sample in samples:
             # post-processing writes all of these as {name}Up/{name}Down
@@ -95,8 +96,8 @@ class Histogram(object):
             variations.extend([f"{tag} Up", f"{tag} Down"])
             if f"histo_{sample}_{name}Up" in directory and f"histo_{sample}_{name}Down" in directory:
                 data.extend([
-                    directory[f"histo_{sample}_{name}Up"].values()-nominal,
-                    directory[f"histo_{sample}_{name}Down"].values()-nominal
+                    value * (directory[f"histo_{sample}_{name}Up"].values()-nominal),
+                    value * (directory[f"histo_{sample}_{name}Down"].values()-nominal)
                 ])
             else:
                 data.extend([np.zeros_like(nominal), np.zeros_like(nominal)])
@@ -283,14 +284,17 @@ class Histogram(object):
         key = tuple(sorted(nuisances))
 
         if ("up", key) not in self.cache:  
-            up = np.zeros(self.data.shape[1])
-            for nuis in nuisances:
-                if self.nuisances[nuis].get("kind") == "weight":
-                    nuis_up = np.max((self.nuis_up(nuis), self.nuis_down(nuis)), axis=0)
-                else:
-                    nuis_up = self.nuis_up(nuis)
-                up += nuis_up**2
-            self.cache[("up", key)] = np.sqrt(up)
+            if len(nuisances) != 1:
+                up = np.zeros(self.data.shape[1])
+                for nuis in nuisances:
+                    if self.nuisances[nuis].get("kind") == "weight":
+                        nuis_up = np.max((self.nuis_up(nuis), self.nuis_down(nuis)), axis=0)
+                    else:
+                        nuis_up = self.nuis_up(nuis)
+                    up += nuis_up**2
+                self.cache[("up", key)] = np.sqrt(up)
+            else:
+                self.cache[("up", key)] = self.nuis_up(nuisances[0])
         
         return self.cache[("up", key)]
 
@@ -300,14 +304,17 @@ class Histogram(object):
         key = tuple(sorted(nuisances))
         
         if ("down", key) not in self.cache:  
-            down = np.zeros(self.data.shape[1])
-            for nuis in nuisances:
-                if self.nuisances[nuis].get("kind") == "weight":
-                    nuis_down = np.min((self.nuis_up(nuis), self.nuis_down(nuis)), axis=0)
-                else:
-                    nuis_down = self.nuis_down(nuis)
-                down += nuis_down**2
-            self.cache[("down", key)] = -np.sqrt(down)
+            if len(nuisances) != 1:
+                down = np.zeros(self.data.shape[1])
+                for nuis in nuisances:
+                    if self.nuisances[nuis].get("kind") == "weight":
+                        nuis_down = np.min((self.nuis_up(nuis), self.nuis_down(nuis)), axis=0)
+                    else:
+                        nuis_down = self.nuis_down(nuis)
+                    down += nuis_down**2
+                self.cache[("down", key)] = -np.sqrt(down)
+            else:
+                self.cache[("down", key)] = self.nuis_down(nuisances[0])
         
         return self.cache[("down", key)]
 

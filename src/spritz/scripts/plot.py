@@ -330,19 +330,28 @@ def plot_variations(
                             "highlight_color": var_colors[i]}
                     }, 
                 })
-                for var,label in zip(["Up","Down"], ["$+1\\sigma$","$-1\\sigma$"]):
-                    try:
-                        panels_[i]["histos"][f"MC {nuis_} {var}"] = {
-                            "histogram": "histo_mc", "variation": f"{nuis_} {var}", "label": f"{nuis_} {label}",
-                            "color": var_colors[i], "nuisances": [], "show_label": True,
-                            "highlight_nuis": []
+                if nuisances[nuis_].get("kind") in ["envelope","square","stdev"]:
+                    for j,var in enumerate(nuisances[nuis_].get("variations",[])):
+                        label_ = f"{nuisances[nuis_].get("name", nuis_)}_{j}"
+                        panels_[i]["histos"][f"MC {label_}"] = {
+                            "histogram": "histo_mc", "variation": label_, "label": label_,
+                            "color": var_colors[j % 8], "nuisances": [],
+                            "show_label": j<8, "alpha": 0.3 if len(nuisances[nuis_].get("variations",[]))>10 else 1.
                         }
-                    except:
-                        panels_[i]["histos"][f"MC {nuis_} {var}"] = {
-                            "histogram": "histo_mc", "variation": f"{nuis_}_{var.lower()}", "label": f"{nuis_} {label}",
-                            "color": var_colors[i], "nuisances": [], "show_label": True,
-                            "highlight_nuis": []
-                        }
+                else:  
+                    for var,label in zip(["Up","Down"], ["$+1\\sigma$","$-1\\sigma$"]):
+                        try:
+                            panels_[i]["histos"][f"MC {nuis_} {var}"] = {
+                                "histogram": "histo_mc", "variation": f"{nuis_} {var}", "label": f"{nuis_} {label}",
+                                "color": var_colors[i], "nuisances": [], "show_label": True,
+                                "highlight_nuis": []
+                            }
+                        except:
+                            panels_[i]["histos"][f"MC {nuis_} {var}"] = {
+                                "histogram": "histo_mc", "variation": f"{nuis_}_{var.lower()}", "label": f"{nuis_} {label}",
+                                "color": var_colors[i], "nuisances": [], "show_label": True,
+                                "highlight_nuis": []
+                            }
             panels_.append(panels[1].copy())
             panels_[-1]["histos"]["MC"]["label_highlight"] = nuis
             panels = [p for p in panels_]
